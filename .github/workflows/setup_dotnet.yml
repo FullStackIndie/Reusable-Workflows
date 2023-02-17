@@ -18,7 +18,7 @@ on:
       project-path:
         description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
         type: string
-        default: "./${{ inputs.project-name }}/${{ inputs.project-name }}.csproj"
+        default: "none"
       run-tests:
         description: Run tests
         type: boolean
@@ -49,7 +49,7 @@ on:
       project-path:
         description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
         type: string
-        default: "./${{ project-name }}/${{ project-name }}.csproj"
+        default: "none"
       run-tests:
         description: Run tests
         type: boolean
@@ -94,6 +94,11 @@ jobs:
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
             ${{ runner.os }}-nuget
+
+      - name: Check if project path was set
+        if: startsWith(${{ inputs.project-path }}, 'none'
+        run: |
+          echo "PROJECT_PATH=$BUILD_PATH/${{ inputs.project-name }}/.csproj" >> $GITHUB_ENV
 
       - name: Restore dependencies
         run: dotnet restore $PROJECT_PATH -c Release
