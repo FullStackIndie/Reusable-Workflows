@@ -1,0 +1,8 @@
+name: Setup Dotnet
+
+on:
+ workflow_call:
+   inputs:
+     node:
+       required: true
+       type: string
