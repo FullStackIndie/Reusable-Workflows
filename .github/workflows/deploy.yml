@@ -82,10 +82,7 @@ jobs:
             cd ${{ inputs.docker-compose-dir }}
             export DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }}
             docker compose -f ${{ inputs.docker-compose-file }} down
-            doppler run \
-            --mount docker-compose.yml \ 
-            --mount-template ${{ inputs.docker-compose-file }} \
-            --command 'doppler run -- docker-compose up -d'
+            doppler run --mount docker-compose.yml --mount-template ${{ inputs.docker-compose-file }} --command 'doppler run -- docker compose up -d'
             exit
             
       - uses: geekyeggo/delete-artifact@v2
