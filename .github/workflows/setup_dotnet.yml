@@ -1,69 +1,68 @@
 name: Setup, Build, Test, Upload .Net Project as Artifact with Aws Code Artifact as Nuget Package Manager
 
 on:
- workflow_call:
-   inputs:
-     runs-on:
+  workflow_call:
+    inputs:
+      runs-on:
         description: Platform to execute on
         type: string
         default: ubuntu-latest
-     dotnet-version:
-       description: Version of dotnet to use
-       type: string
-       default: 7.0.x
-     project-name:
-       description: Project name - If project path is not specified Project Name will be used with .Net default folder naming convention
-       type: string
-       required: true
-     project-path:
-       description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
-       type: string
-       default: "./${{ inputs.project-name }}/${{ inputs.project-name }}.csproj" 
-     run-tests:
-       description: Run tests
-       type: boolean
-       default: false
-     cache-key:
-       description: Cache key for uploading build artifacts
-       type: string
-       default: ${{ input.project-name }}
-     cache:
-       description: Upload build artifacts? 
-       type: boolean
-       default: true
-       
-       
- workflow_dispatch:
-   inputs:
-     runs-on:
+      dotnet-version:
+        description: Version of dotnet to use
+        type: string
+        default: 7.0.x
+      project-name:
+        description: Project name - If project path is not specified Project Name will be used with .Net default folder naming convention
+        type: string
+        required: true
+      project-path:
+        description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
+        type: string
+        default: "./${{ inputs.project-name }}/${{ inputs.project-name }}.csproj"
+      run-tests:
+        description: Run tests
+        type: boolean
+        default: false
+      cache-key:
+        description: Cache key for uploading build artifacts
+        type: string
+        default: ${{ input.project-name }}
+      cache:
+        description: Upload build artifacts?
+        type: boolean
+        default: true
+
+  workflow_dispatch:
+    inputs:
+      runs-on:
         description: Platform to execute on
         type: string
         default: ubuntu-latest
-     dotnet-version:
-       description: Version of dotnet to use
-       type: string
-       default: 7.0.x
-     project-name:
-       description: Project name - If project path is not specified Project Name will be used with .Net default folder naming convention
-       type: string
-       required: true
-     project-path:
-       description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
-       type: string
-       default: "./${{ inputs.project-name }}/${{ inputs.project-name }}.csproj" 
-     run-tests:
-       description: Run tests
-       type: boolean
-       default: false
-     cache-key:
-       description: Cache key for uploading build artifacts
-       type: string
-       default: ${{ input.project-name }}
-     cache:
-       description: Upload build artifacts? 
-       type: boolean
-       default: true
-       
+      dotnet-version:
+        description: Version of dotnet to use
+        type: string
+        default: 7.0.x
+      project-name:
+        description: Project name - If project path is not specified Project Name will be used with .Net default folder naming convention
+        type: string
+        required: true
+      project-path:
+        description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
+        type: string
+        default: "./${{ inputs.project-name }}/${{ inputs.project-name }}.csproj"
+      run-tests:
+        description: Run tests
+        type: boolean
+        default: false
+      cache-key:
+        description: Cache key for uploading build artifacts
+        type: string
+        default: ${{ input.project-name }}
+      cache:
+        description: Upload build artifacts?
+        type: boolean
+        default: true
+
 jobs:
   build-dotnet:
     runs-on: ${{ inputs.runs-on }}
@@ -82,14 +81,13 @@ jobs:
           aws codeartifact login --tool dotnet --domain fullstackindie --domain-owner 896630178141 --repository fullstackindie
           aws codeartifact list-packages --domain fullstackindie --repository fullstackindie
 
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
 
       - name: Cache Nuget Dependencies
-      - uses: actions/cache@v3
+        uses: actions/cache@v3
         with:
           path: ~/.nuget/packages
           # Look to see if there is a cache hit for the corresponding requirements file
@@ -102,11 +100,11 @@ jobs:
 
       - name: Build
         run: dotnet build $PROJECT_PATH --no-restore -c Release
-        
+
       - name: Test
         if: ${{ inputs.run-tests }}
         run: dotnet test $PROJECT_PATH --no-build --verbosity normal
-     
+
       - name: Upload Build Artifact
         if: ${{ inputs.cache }}
         uses: actions/upload-artifact@v2
@@ -114,7 +112,3 @@ jobs:
           name: ${{ input.cache-key }}
           path: $BUILD_PATH
           if-no-files-found: error
-        
-        
-        
-        
