@@ -78,7 +78,7 @@ jobs:
           passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
-            docker pull ${{ inputs.docker-repo-name }}/${{ inputs.image-name }}:latest
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ inputs.image-name }}:latest
             cd ${{ inputs.docker-compose-dir }}
             export DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }}
             docker compose -f ${{ inputs.docker-compose-file }} down
