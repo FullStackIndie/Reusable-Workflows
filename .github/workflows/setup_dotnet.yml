@@ -49,7 +49,7 @@ on:
       project-path:
         description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
         type: string
-        default: "./${{ inputs.project-name }}/${{ inputs.project-name }}.csproj"
+        default: "./${{ project-name }}/${{ project-name }}.csproj"
       run-tests:
         description: Run tests
         type: boolean
