@@ -101,7 +101,7 @@ jobs:
         run: |
           echo "PROJECT_PATH=$(find $BUILD_PATH | grep "${{ inputs.project-name }}.csproj")" >> $GITHUB_ENV
           
-
+          
       - name: Restore dependencies
         run: dotnet restore $PROJECT_PATH
 
@@ -112,17 +112,13 @@ jobs:
         if: ${{ inputs.run-tests }}
         run: dotnet test $PROJECT_PATH --no-build --verbosity normal
 
-      - name: Check build to find files to upload
-        if: startsWith(${{ inputs.project-path }}, 'none')
-        run: |
-          find $BUILD_PATH
-          #echo "PROJECT_PATH=$(find $BUILD_PATH | grep "${{ inputs.project-name }}.csproj")" >> $GITHUB_ENV
+      - name: Tar files for Upload
+        run: tar -cvfz artifact.tar.gz ${{ env.CACHE_PATH }}
           
       - name: Upload Build Artifact
         if: ${{ inputs.cache }}
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.cache-key }}
-          path: |
-            ${{ env.CACHE_PATH }}/
-            #$CACHE_PATH/${{ inputs.project-name }}/
+          path: artifact.tar
+          retention-days: 1
