@@ -113,7 +113,7 @@ jobs:
         run: dotnet test $PROJECT_PATH --no-build --verbosity normal
 
       - name: Tar files for Upload
-        run: tar --exclude='$BUILD_PATH/.git' --exclude='$CACHE_PATH/.git' -cvzf artifact.tar.gz  ${{ env.CACHE_PATH }}
+        run: tar --exclude=**/.git/* --exclude=**/bin/** --exclude=**/obj/** -cvzf artifact.tar.gz  ${{ env.CACHE_PATH }}
           
       - name: Upload Build Artifact
         if: ${{ inputs.cache }}
