@@ -122,7 +122,7 @@ jobs:
         
       - name: Publish
         run: |
-          dotnet publish $PROJECT_PATH --no-build --os linux \
+          dotnet publish $PROJECT_PATH --os linux \
           --arch x64 -c Release -p:PublishProfile=DefaultContainer,ContainerImageName=${{ inputs.image-name }}
         
       - name: List & Tag Docker Images
