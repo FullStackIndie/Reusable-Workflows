@@ -124,5 +124,5 @@ jobs:
         with:
           name: ${{ inputs.cache-key }}
           path: |
-            $CACHE_PATH/
-            $CACHE_PATH/${{ inputs.project-name }}/
+            ${{ env.CACHE_PATH }}/
+            #$CACHE_PATH/${{ inputs.project-name }}/
