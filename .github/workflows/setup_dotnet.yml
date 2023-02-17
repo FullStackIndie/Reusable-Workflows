@@ -54,6 +54,10 @@ on:
         description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
         type: string
         default: "none"
+      image-name:
+        description: Docker Image name
+        type: string
+        required: true
       run-tests:
         description: Run tests
         type: boolean
