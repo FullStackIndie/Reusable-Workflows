@@ -1,4 +1,4 @@
-name: Setup, Build, Test, Upload .Net Project as Artifact with Aws Code Artifact as Nuget Package Manager
+name: Setup, Build, & Publish to DockerHub .Net Project as Artifact with Aws Code Artifact as Nuget Package Manager
 
 on:
   workflow_call:
@@ -19,6 +19,10 @@ on:
         description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
         type: string
         default: "none"
+      image-name:
+        description: Docker Image name
+        type: string
+        required: true
       run-tests:
         description: Run tests
         type: boolean
@@ -106,21 +110,31 @@ jobs:
         run: dotnet restore $PROJECT_PATH
 
       - name: Build
-        run: dotnet build $PROJECT_PATH --no-restore
+        run: dotnet build $PROJECT_PATH --no-restore -c Release
 
       - name: Test
         if: ${{ inputs.run-tests }}
         run: dotnet test $PROJECT_PATH --no-build --verbosity normal
-
-      - name: Tar files for Upload
+        
+      - name: Publish
         run: |
-          mkdir artifact
-          tar --exclude=**/.git/* --exclude=**/bin/** --exclude=**/obj/** --exclude=./artifact -cvzf artifact/artifact.tar.gz  ${{ env.CACHE_PATH }}
-          
+          dotnet publish $PROJECT_PATH/${{ inputs.project-name }}.csproj --no-build --os linux \
+          --arch x64 -c Release -p:PublishProfile=DefaultContainer,ContainerImageName=${{ inputs.image-name }}
+        
+      - name: List & Tag Docker Images
+        run: |
+          img=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep ${{ inputs.image-name }})
+          docker tag $img  murphymurph21/${{ inputs.image-name }}:latest
+        
+      - name: Save Docker image to compressed file - tar.gz
+        run: |
+          mkdir -p artifact
+          docker save murphymurph21/${{ inputs.image-name }}:latest | gzip > artifact/docker-image.tar.gz
+        
       - name: Upload Build Artifact
         if: ${{ inputs.cache }}
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.cache-key }}
-          path: artifact/artifact.tar.gz
+          path: artifact/docker-image.tar.gz
           retention-days: 1
