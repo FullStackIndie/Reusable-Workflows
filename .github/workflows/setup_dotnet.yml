@@ -123,5 +123,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.cache-key }}
-          path: $CACHE_PATH
-  
+          path: |
+            $CACHE_PATH/
+            $CACHE_PATH/${{ inputs.project-name }}/
