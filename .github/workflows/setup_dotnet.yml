@@ -101,7 +101,7 @@ jobs:
           echo "PROJECT_PATH=$BUILD_PATH/${{ inputs.project-name }}/.csproj" >> $GITHUB_ENV
 
       - name: Restore dependencies
-        run: dotnet restore $PROJECT_PATH -c Release
+        run: dotnet restore $PROJECT_PATH
 
       - name: Build
         run: dotnet build $PROJECT_PATH --no-restore -c Release
