@@ -98,8 +98,8 @@ jobs:
       - name: Check if project path was set
         if: startsWith(${{ inputs.project-path }}, 'none'
         run: |
-          echo "PROJECT_PATH=$BUILD_PATH/${{ inputs.project-name }}BUILD_PATH.csproj" >> $GITHUB_ENV
-          find $BUILD_PATH
+          echo "PROJECT_PATH=$(find $BUILD_PATH | grep "${{ inputs.project-name }}.csproj")" >> $GITHUB_ENV
+          
 
       - name: Restore dependencies
         run: dotnet restore $PROJECT_PATH
