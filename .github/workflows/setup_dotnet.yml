@@ -113,7 +113,7 @@ jobs:
         with:
           name: ${{ input.cache-key }}
           path: $BUILD_PATH
-        
+          if-no-files-found: error
         
         
         
