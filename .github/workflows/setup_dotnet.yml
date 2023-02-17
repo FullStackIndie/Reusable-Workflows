@@ -99,9 +99,7 @@ jobs:
         if: startsWith(${{ inputs.project-path }}, 'none'
         run: |
           echo "PROJECT_PATH=$BUILD_PATH/${{ inputs.project-name }}BUILD_PATH.csproj" >> $GITHUB_ENV
-          ls -la $BUILD_PATH
-          ls -la $BUILD_PATH/${{ inputs.project-name }}
-          ls -la $BUILD_PATH/${{ inputs.project-name }}/${{ inputs.project-name }}
+          find $BUILD_PATH
 
       - name: Restore dependencies
         run: dotnet restore $PROJECT_PATH
