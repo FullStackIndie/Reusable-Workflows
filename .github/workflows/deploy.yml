@@ -13,10 +13,6 @@ name: >-
         description: Docker Image name
         type: string
         required: true
-      docker-repo-name:
-        description: Docker Remote repository name
-        type: string
-        required: true
       docker-compose-file:
         description: Docker Compose filename
         type: string
@@ -71,7 +67,7 @@ jobs:
           
       - name: Push to DockerHub
         run: |
-          docker push ${{ inputs.docker-repo-name }}/${{ inputs.image-name }}:latest
+          docker push murphymurph21/${{ inputs.image-name }}:latest
           
       - name: SSH into Dev Server
         uses: appleboy/ssh-action@v0.1.7
