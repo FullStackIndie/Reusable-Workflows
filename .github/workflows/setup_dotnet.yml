@@ -114,6 +114,6 @@ jobs:
         if: ${{ inputs.cache }}
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ input.cache-key }}
+          name: ${{ inputs.cache-key }}
           path: $BUILD_PATH
           if-no-files-found: error
