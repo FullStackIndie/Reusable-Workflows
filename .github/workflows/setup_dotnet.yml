@@ -113,12 +113,14 @@ jobs:
         run: dotnet test $PROJECT_PATH --no-build --verbosity normal
 
       - name: Tar files for Upload
-        run: tar --warning=no-file-changed --exclude=**/.git/* --exclude=**/bin/** --exclude=**/obj/** -cvzf artifact.tar.gz  ${{ env.CACHE_PATH }}
+        run: |
+          mkdir artifact
+          tar --exclude=**/.git/* --exclude=**/bin/** --exclude=**/obj/** --exclude=./artifact -cvzf artifact/artifact.tar.gz  ${{ env.CACHE_PATH }}
           
       - name: Upload Build Artifact
         if: ${{ inputs.cache }}
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.cache-key }}
-          path: artifact.tar
+          path: artifact/artifact.tar.gz
           retention-days: 1
