@@ -104,13 +104,6 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore $PROJECT_PATH
 
-      - name: Check restoriation to find files to upload
-        if: startsWith(${{ inputs.project-path }}, 'none'
-        run: |
-          find $BUILD_PATH
-          #echo "PROJECT_PATH=$(find $BUILD_PATH | grep "${{ inputs.project-name }}.csproj")" >> $GITHUB_ENV
-          
-
       - name: Build
         run: dotnet build $PROJECT_PATH --no-restore -c Release
 
@@ -124,10 +117,10 @@ jobs:
           find $BUILD_PATH
           #echo "PROJECT_PATH=$(find $BUILD_PATH | grep "${{ inputs.project-name }}.csproj")" >> $GITHUB_ENV
           
-      #- name: Upload Build Artifact
-      #    if: ${{ inputs.cache }}
-      #    uses: actions/upload-artifact@v2
-      #    with:
-      #      name: ${{ inputs.cache-key }}
-      #      path: $BUILD_PATH
+      - name: Upload Build Artifact
+        if: ${{ inputs.cache }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.cache-key }}
+          path: $BUILD_PATH
   
