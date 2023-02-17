@@ -26,22 +26,22 @@ name: >-
         type: string
         required: true
     secrets:
-      host:
+      SERVER_SSH_HOST:
         description: Server IP to deploy on
         required: true
-      username:
+      SERVER_SSH_USERNAME:
         description: Server user
         required: true
-      key:
+      SERVER_SSH_KEY:
         description: Server ssh key
         required: true
-      passphrase:
+      SERVER_SSH_PASSPHRASE:
         description: Server ssh key passphrase
         required: true
-      port:
+      SERVER_SSH_PORT:
         description: Server port to ssh into
         required: true
-      doppler-token:
+      DOPPLER_TOKEN:
         description: Doppler token for setting up secrets
         required: true
  
@@ -72,15 +72,15 @@ jobs:
       - name: SSH into Dev Server
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.host }}
-          username: ${{ secrets.username }}
-          key: ${{ secrets.key }}
-          passphrase: ${{ secrets.passphrase }}
-          port: ${{ secrets.port }}
+          host: ${{ secrets.SERVER_SSH_HOST }}
+          username: ${{ secrets.SERVER_SSH_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             docker pull ${{ inputs.docker-repo-name }}/${{ inputs.image-name }}:latest
             cd ${{ inputs.docker-compose-dir }}
-            export DOPPLER_TOKEN=${{ secrets.doppler-token }}
+            export DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }}
             docker compose -f ${{ inputs.docker-compose-file }} down
             doppler run  --mount docker-compose.yml \ 
             --mount-template ${{ vars.DOCKER_COMPOSE_FILE }} \
