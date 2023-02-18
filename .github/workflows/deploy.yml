@@ -1,6 +1,6 @@
 name: >-
-  Setup, Build, & Publish to DockerHub .Net Project as Artifact with Aws Code
-  Artifact as Nuget Package Manager
+  Download Docker Image from Artifact, Publish to DockerHub, SSH into Production Server,
+  Pull the latest Docker Image, Start with Doppler/Docker-Compose so Config/Secrets are injected, Delete Artifact
   
 'on':
   workflow_call:
