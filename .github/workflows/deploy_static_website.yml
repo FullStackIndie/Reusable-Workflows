@@ -48,15 +48,15 @@ jobs:
           ls -la ./
     
       - name: copy file via ssh password
-        uses: appleboy/scp-action@master
+        uses: mdallasanta/ssh-scp-deploy@v1.2.0
         with:
           host: ${{ secrets.SERVER_SSH_HOST }}
-          username: ${{ secrets.SERVER_SSH_USERNAME }}
+          user: ${{ secrets.SERVER_SSH_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
+          password: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.SERVER_SSH_PORT }}
-          source: ./deploy.tar.gz
-          target: ${{ inputs.folder_path }}
+          local: ./deploy.tar.gz
+          remote: ${{ inputs.folder_path }}
     
     
       - name: SSH into Dev Server
