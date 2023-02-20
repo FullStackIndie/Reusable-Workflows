@@ -43,9 +43,9 @@ jobs:
           ls -la
           mkdir ../build
           cp -TR . ../build/
-          cd ..
-          tar -zcvf deployment.tar.gz build/
-          ls -la build
+          tar -zcvf --exclude=**/.git/** deployment.tar.gz ../build/
+          ls -la ../build
+          ls -la ./
     
       - name: copy file via ssh password
         uses: appleboy/scp-action@master
@@ -55,7 +55,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.SERVER_SSH_PORT }}
-          source: "build/deploy.tar.gz"
+          source: "deploy.tar.gz"
           target: ${{ inputs.folder_path }}
     
     
