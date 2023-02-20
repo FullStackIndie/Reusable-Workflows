@@ -55,6 +55,7 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             cd ~/workspace
+            rm -r ./${{ inputs.repo_name}}
             git clone ssh://git@github/${{ inputs.owner_name }}/${{ inputs.repo_name}}.git
             yes | cp -rf ./${{ inputs.repo_name }} ${{ inputs.folder_path }}/
             cd ${{ inputs.folder_path }}/${{ inputs.repo_name }}
