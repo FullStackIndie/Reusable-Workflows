@@ -54,7 +54,9 @@ jobs:
           passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
-            cd ${{ inputs.folder_path }}
+            cd ~/workspace
             git clone ssh://git@github/${{ inputs.owner_name }}/${{ inputs.repo_name}}.git
+            cp -r ./${{ inputs.repo_name }} ${{ inputs.folder_path }}/
+            cd ${{ inputs.folder_path }}/${{ inputs.repo_name }}
             ls -la
             exit
