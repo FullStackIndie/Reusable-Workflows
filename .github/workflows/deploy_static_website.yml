@@ -55,7 +55,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.SERVER_SSH_PORT }}
-          source: "deploy.tar.gz"
+          source: ./deploy.tar.gz
           target: ${{ inputs.folder_path }}
     
     
