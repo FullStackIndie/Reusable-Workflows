@@ -1,6 +1,5 @@
 name: >-
-  Download Docker Image from Artifact, Publish to DockerHub, SSH into Production Server,
-  Pull the latest Docker Image, Start with Doppler/Docker-Compose so Config/Secrets are injected, Delete Artifact
+  Publish static Website into Production Server
   
 'on':
   workflow_call:
@@ -40,10 +39,10 @@ jobs:
       - name: Run a multi-line script
         run: |
           ls -la
-          mkdir ../build
-          cp -TR . ../build
-          tar -zcvf deployment.tar.gz ../build/
-          ls -la ../build
+          mkdir build
+          cp -TR . ./build/
+          tar -zcvf deployment.tar.gz ./build/
+          ls -la .//build
     
       - name: copy file via ssh password
         uses: appleboy/scp-action@master
@@ -53,7 +52,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.SERVER_SSH_PORT }}
-          source: "../build/deploy.tar.gz"
+          source: "build/deploy.tar.gz"
           target: ${{ inputs.folder_path }}
     
     
