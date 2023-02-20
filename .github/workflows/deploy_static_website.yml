@@ -12,6 +12,14 @@ name: >-
         description: Folder to create website in
         type: string
         required: true  
+      owner_name:
+        description: NAme of owner or organization
+        type: string
+        required: true 
+      repo_name:
+        description: Name of repo
+        type: string
+        required: true
     secrets:
       SERVER_SSH_HOST:
         description: Server IP to deploy on
@@ -47,6 +55,6 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             cd ${{ inputs.folder_path }}
-            git clone ssh://git@github/FullStackIndieLLC/AdminDashboard.git
+            git clone ssh://git@github/${{ inputs.owner_name }}/${{ inputs.repo_name}}.git
             ls -la
             exit
