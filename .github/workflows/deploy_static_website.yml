@@ -36,28 +36,7 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-    
-    # Runs a set of commands using the runners shell
-      - name: Tar files
-        run: |
-          ls -la
-          mkdir ../build
-          cp -TR . ../build/
-          tar -zcvf deployment.tar.gz  --exclude=**/.git/** ../build/
-          ls -la ../build
-          ls -la ./
-    
-      - name: Copy single file to remote
-        uses: garygrossgarten/github-action-scp@v0.8.0
-        with:
-          local: deployment.tar.gz
-          remote: ${{ inputs.folder_path }}/deployment.tar.gz
-          host: ${{ secrets.SERVER_SSH_HOST }}
-          username: ${{ secrets.SERVER_SSH_USERNAME }}
-          privateKey: ${{ secrets.SERVER_SSH_KEY }}
-          passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
-          port: ${{ secrets.SERVER_SSH_PORT }}
-    
+
       - name: SSH into Dev Server
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -68,6 +47,6 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             cd ${{ inputs.folder_path }}
-            tar -zxf deploy.tar.gz
+            git clone ssh://git@github/FullStackIndieLLC/AdminDashboard.git
             ls -la
             exit
