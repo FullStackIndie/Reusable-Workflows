@@ -43,7 +43,7 @@ jobs:
           ls -la
           mkdir ../build
           cp -TR . ../build/
-          tar -zcvf --exclude=**/.git/** deployment.tar.gz ../build/
+          tar -zcvf deployment.tar.gz  --exclude=**/.git/** ../build/
           ls -la ../build
           ls -la ./
     
