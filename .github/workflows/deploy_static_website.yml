@@ -39,10 +39,11 @@ jobs:
       - name: Run a multi-line script
         run: |
           ls -la
-          mkdir build
-          cp -TR . ./build/
-          tar -zcvf deployment.tar.gz ./build/
-          ls -la .//build
+          mkdir ../build
+          cp -TR . ../build/
+          cd ..
+          tar -zcvf deployment.tar.gz build/
+          ls -la build
     
       - name: copy file via ssh password
         uses: appleboy/scp-action@master
