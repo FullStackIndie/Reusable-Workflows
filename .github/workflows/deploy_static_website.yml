@@ -51,8 +51,7 @@ jobs:
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
-          scp -i ~/.ssh/id_rsa -P ${{ secrets.SERVER_SSH_PORT }} ./deployment.tar.gz \
-          ${{ secrets.SERVER_SSH_USERNAME }}@${{ secrets.SERVER_SSH_HOST }}:${{ inputs.folder_path }}
+          echo "${{ secrets.SERVER_SSH_KEY }}" | scp -i /dev/stdin -P ${{ secrets.SERVER_SSH_PORT }} ./deployment.tar.gz  ${{ secrets.SERVER_SSH_USERNAME }}@${{ secrets.SERVER_SSH_HOST }}:${{ inputs.folder_path }}
     
     
       - name: SSH into Dev Server
