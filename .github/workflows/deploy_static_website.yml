@@ -56,7 +56,7 @@ jobs:
           script: |
             cd ~/workspace
             git clone ssh://git@github/${{ inputs.owner_name }}/${{ inputs.repo_name}}.git
-            cp -r ./${{ inputs.repo_name }} ${{ inputs.folder_path }}/
+            yes | cp -rf ./${{ inputs.repo_name }} ${{ inputs.folder_path }}/
             cd ${{ inputs.folder_path }}/${{ inputs.repo_name }}
             ls -la
             exit
