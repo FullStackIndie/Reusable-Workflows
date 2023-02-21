@@ -63,7 +63,6 @@ jobs:
             rm -r ./*
             git clone ssh://git@github/${{ inputs.owner_name }}/${{ inputs.repo_name}}.git
             rm -r ./AdminDashboard/.git*
-            chown www-data:www-data ${{ inputs.repo_name}}
-            chown www-data:www-data ${{ inputs.repo_name}}/*
+            chown -R www-data:www-data ${{ inputs.repo_name}}
             systemctl reload nginx
             exit
