@@ -58,6 +58,7 @@ jobs:
         remote_key: ${{ secrets.SERVER_SSH_KEY }}
 
   ssh-deploy-website:
+    needs: rsync-updates-to-server
     runs-on: ${{ inputs.runs-on }}
     steps:
       - name: SSH into Dev Server
