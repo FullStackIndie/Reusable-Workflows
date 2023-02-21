@@ -1,7 +1,7 @@
 name: >-
   Publish static Website into Production Server
   
-'on':
+on:
   workflow_call:
     inputs:
       runs-on:
@@ -17,9 +17,6 @@ name: >-
         type: string
         required: true 
       repo_name:
-        description: Name of repo
-        type: string
-        required: true
         description: Name of repo
         type: string
         required: true
