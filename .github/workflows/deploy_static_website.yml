@@ -31,16 +31,13 @@ on:
       SERVER_SSH_KEY:
         description: Server ssh key
         required: true
-      SERVER_SSH_PASSPHRASE:
-        description: Server ssh key passphrase
-        required: true
       SERVER_SSH_PORT:
         description: Server port to ssh into
         required: true
  
 
 jobs:
-  download-build-docker-image:
+  ssh-deploy-website:
     runs-on: ${{ inputs.runs-on }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -52,7 +49,6 @@ jobs:
           host: ${{ secrets.SERVER_SSH_HOST }}
           username: ${{ secrets.SERVER_SSH_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             mkdir -p ${{ inputs.folder_path }}
