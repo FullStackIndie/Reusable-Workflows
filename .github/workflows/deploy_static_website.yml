@@ -46,7 +46,7 @@ jobs:
     - name: Deply with rsync 
       uses: burnett01/rsync-deployments@5.2.1
       env: 
-        DEPLOY_FOLDER: ${{ inputs.folder_path }}/deploy/${{ inputs.repo_name }}
+        DEPLOY_FOLDER: ${{ inputs.folder_path }}/${{ inputs.repo_name }}
       with:
         # use --mkpath if using Ubuntu 22.04 - --mkpath not supported in rsync 3.1.3 Ubuntu 20.04 GitHub Action Runner
         switches: -avzr --delete --cvs-exclude --rsync-path="mkdir -p $DEPLOY_FOLDER && rsync" 
@@ -64,7 +64,7 @@ jobs:
       - name: SSH into Dev Server
         uses: appleboy/ssh-action@v0.1.7
         env: 
-          DEPLOY_FOLDER: ${{ inputs.folder_path }}/deploy
+          DEPLOY_FOLDER: ${{ inputs.folder_path }}/${{ inputs.repo_name }}
         with:
           host: ${{ secrets.SERVER_SSH_HOST }}
           username: ${{ secrets.SERVER_SSH_USERNAME }}
@@ -73,10 +73,6 @@ jobs:
           envs: DEPLOY_FOLDER
           script: |
             chown -R www-data:www-data $DEPLOY_FOLDER
-            mkdir -p ${{ inputs.folder_path }}/${{ inputs.repo_name }}
-            rm -r ${{ inputs.folder_path }}/${{ inputs.repo_name }}
-            cp -r $DEPLOY_FOLDER/${{ inputs.repo_name }} ${{ inputs.folder_path }}/${{ inputs.repo_name }}
-            chown -R www-data:www-data ${{ inputs.folder_path }}
             systemctl reload nginx
             exit
             
