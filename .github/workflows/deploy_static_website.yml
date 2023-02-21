@@ -20,6 +20,10 @@ name: >-
         description: Name of repo
         type: string
         required: true
+        description: Name of repo
+        type: string
+        required: true
+        
     secrets:
       SERVER_SSH_HOST:
         description: Server IP to deploy on
@@ -54,11 +58,12 @@ jobs:
           passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
-            cd ~/workspace
-            rm -r ./${{ inputs.repo_name}}
-            rm -r ${{ inputs.folder_path }}/${{ inputs.repo_name }}
+            mkdir -p ${{ inputs.folder_path }}
+            cd ${{ inputs.folder_path }}
+            rm -r ./*
             git clone ssh://git@github/${{ inputs.owner_name }}/${{ inputs.repo_name}}.git
-            yes | cp -r ./${{ inputs.repo_name }} ${{ inputs.folder_path }}/
-            cd ${{ inputs.folder_path }}/${{ inputs.repo_name }}
-            ls -la
+            rm -r ./AdminDashboard/.git*
+            chown www-data:www-data ${{ inputs.repo_name}}
+            chown www-data:www-data ${{ inputs.repo_name}}/*
+            systemctl reload nginx
             exit
