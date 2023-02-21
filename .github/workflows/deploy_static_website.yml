@@ -37,25 +37,45 @@ on:
  
 
 jobs:
-  ssh-deploy-website:
+  rsync-updates-to-server:
     runs-on: ${{ inputs.runs-on }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
+    
+    - name: Deply with rsync 
+      uses: burnett01/rsync-deployments@5.2.1
+      env: 
+        DEPLOY_FOLDER: ${{ inputs.folder_path }}/deploy
+      with:
+        switches: -avzr --delete --mkpath --cvs-exclude
+        path: $GITHUB_WORKSPACE
+        remote_path: $DEPLOY_FOLDER
+        remote_host: ${{ secrets.SERVER_SSH_HOST }}
+        remote_user: ${{ secrets.SERVER_SSH_USERNAME }}
+        remote_port: ${{ secrets.SERVER_SSH_PORT }}
+        remote_key: ${{ secrets.SERVER_SSH_KEY }}
 
+  ssh-deploy-website:
+    runs-on: ${{ inputs.runs-on }}
+    steps:
       - name: SSH into Dev Server
         uses: appleboy/ssh-action@v0.1.7
+        env: 
+          DEPLOY_FOLDER: ${{ inputs.folder_path }}/deploy
         with:
           host: ${{ secrets.SERVER_SSH_HOST }}
           username: ${{ secrets.SERVER_SSH_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
+          envs: DEPLOY_FOLDER
           script: |
+            chown -R www-data:www-data $DEPLOY_FOLDER
             mkdir -p ${{ inputs.folder_path }}
-            cd ${{ inputs.folder_path }}
-            rm -r ./*
-            git clone ssh://git@github/${{ inputs.owner_name }}/${{ inputs.repo_name}}.git
-            rm -r ./AdminDashboard/.git*
-            chown -R www-data:www-data ${{ inputs.repo_name}}
+            rm -r ${{ inputs.folder_path }}/*
+            cp -r $DEPLOY_FOLDER ${{ inputs.folder_path }}/
+            chown -R www-data:www-data ${{ inputs.folder_path }}
             systemctl reload nginx
             exit
+            
+
