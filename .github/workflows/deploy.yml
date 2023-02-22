@@ -47,7 +47,7 @@ name: >-
  
 
 jobs:
-  download-build-docker-image:
+  push-docker-image:
     runs-on: ${{ inputs.runs-on }}
     steps:
       - uses: actions/download-artifact@v3
@@ -68,7 +68,11 @@ jobs:
       - name: Push to DockerHub
         run: |
           docker push murphymurph21/${{ inputs.image-name }}:latest
-          
+
+  deploy-docker-image:    
+    needs: push-docker-image
+    runs-on: ${{ inputs.runs-on }}
+    steps:
       - name: SSH into Dev Server
         uses: appleboy/ssh-action@v0.1.7
         with:
