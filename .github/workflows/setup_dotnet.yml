@@ -105,7 +105,7 @@ jobs:
             ${{ runner.os }}-nuget
 
       - name: Check if project path was set
-        if: startsWith(${{ inputs.project-path }}, 'none'
+        if: startsWith(${{ inputs.project-path }}, 'none')
         run: |
           echo "PROJECT_PATH=$(find $BUILD_PATH | grep "${{ inputs.project-name }}.csproj")" >> $GITHUB_ENV
           
