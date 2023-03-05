@@ -35,6 +35,21 @@ on:
       SERVER_SSH_PORT:
         description: Server port to ssh into
         required: true
+      AWS_ACCESS_KEY_ID: 
+        description: Server port to ssh into
+        required: true
+      AWS_SECRET_ACCESS_KEY: 
+        description: Server port to ssh into
+        required: true
+      AWS_S3_BUCKET:
+        description: Server port to ssh into
+        required: true
+      CLOUDFRONT_DITRIBUTION_ID:
+        description: Server port to ssh into
+        required: true
+      AWS_REGION: 
+        description: Server port to ssh into
+        required: true
  
 
 jobs:
