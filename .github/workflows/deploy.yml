@@ -44,6 +44,12 @@ name: >-
       DOPPLER_TOKEN:
         description: Doppler token for setting up secrets
         required: true
+      DOCKER_HUB_USERNAME:
+        description: Docker Username
+        required: true
+      DOCKER_HUB_ACCESS_TOKEN:
+        description: Docker Acces token to access DockerHub Registry
+        required: true
  
 
 jobs:
