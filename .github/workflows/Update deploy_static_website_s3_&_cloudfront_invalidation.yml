@@ -92,7 +92,7 @@ jobs:
         --exclude '.git/*' --exclude '.vscode/*' --exclude '*.html' --exclude '*.gitignore' --exclude '.github/*' --exclude '*.txt' --exclude 'License/*'
       
     - name: Check CloudFront Invalidation Path
-      if: startsWith(env.DEST_DIR, '/') != true
+      if: startsWith(env.CLOUDFRONT_INVALIDATION_PATH, '/') != true
       run: |
         echo "CLOUDFRONT_INVALIDATION_PATH=/$CLOUDFRONT_INVALIDATION_PATH" >> $GITHUB_ENV
       
