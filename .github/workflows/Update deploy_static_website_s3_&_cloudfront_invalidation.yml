@@ -74,6 +74,7 @@ jobs:
         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         SOURCE_DIR: ${{ inputs.source_folder }}
         DEST_DIR: ${{ inputs.dest_folder }}
+        CLOUDFRONT_INVALIDATION_PATH: ${{ inputs.invalidation_path }}
         DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DITRIBUTION_ID }}
         
     steps:
@@ -90,10 +91,15 @@ jobs:
         aws s3 sync $SOURCE_DIR s3://$AWS_S3_BUCKET$DEST_DIR --follow-symlinks --delete --cache-control 'public,max-age=31536000' \
         --exclude '.git/*' --exclude '.vscode/*' --exclude '*.html' --exclude '*.gitignore' --exclude '.github/*' --exclude '*.txt' --exclude 'License/*'
       
+    - name: Check CloudFront Invalidation Path
+      if: startsWith(env.DEST_DIR, '/') != true
+      run: |
+        echo "CLOUDFRONT_INVALIDATION_PATH=/$CLOUDFRONT_INVALIDATION_PATH" >> $GITHUB_ENV
+      
     - name: Invalidate CloudFront Cache
       run: |
         aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID \
-        --paths ${{ inputs.invalidation_path }}
+        --paths $CLOUDFRONT_INVALIDATION_PATH
 
 
   rsync-updates-to-server:
