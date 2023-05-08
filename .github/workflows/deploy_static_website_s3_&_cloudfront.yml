@@ -21,6 +21,14 @@ on:
         description: Name of repo
         type: string
         required: true
+      source_folder:
+        description: Source Directory containing files to upload
+        type: string
+        default: "./"
+      dest_folder:
+        description: Source Directory containing files to upload
+        type: string
+        default: "/"
         
     secrets:
       SERVER_SSH_HOST:
@@ -59,7 +67,7 @@ jobs:
     - name: Checkout Repo to Upload files
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       uses: actions/checkout@v3
-    
+
     - name: Sync files to Aws S3 and Invalidate CloudFront Cache
       uses: kersvers/s3-sync-with-cloudfront-invalidation@v1.0.0
       with:
@@ -70,6 +78,8 @@ jobs:
         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DITRIBUTION_ID }}
         AWS_REGION: ${{ secrets.AWS_REGION }}  
+        SOURCE_DIR: ${{ inputs.source_folder }}
+        DEST_DIR: ${{ inputs.dest_folder }}
 
   rsync-updates-to-server:
     needs: cp-files-to-s3-invalidate-cloudfront
