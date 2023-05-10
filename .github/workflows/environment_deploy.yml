@@ -2,7 +2,7 @@ name: >-
   Deploy web app to server and update aws s3 buckets based on environment
 
 "on":
-  workflow_call:
+  workflow_dispatch:
     inputs:
       runs-on:
         description: Platform to execute on
