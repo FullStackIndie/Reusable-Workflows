@@ -1,0 +1,52 @@
+name: >-
+  Deploy web app to server and update aws s3 buckets based on environment
+
+"on":
+  workflow_call:
+    inputs:
+      runs-on:
+        description: Platform to execute on
+        type: string
+        default: ubuntu-latest
+      environment:
+        description: Docker Image name
+        required: true
+        default: dev
+        type: choice 
+        options:
+          - dev
+          - staging
+          - production
+
+    secrets:
+      SERVER_SSH_HOST:
+        description: Server IP to deploy on
+        required: true
+      SERVER_SSH_USERNAME:
+        description: Server user
+        required: true
+      SERVER_SSH_KEY:
+        description: Server ssh key
+        required: true
+      SERVER_SSH_PASSPHRASE:
+        description: Server ssh key passphrase
+        required: true
+      SERVER_SSH_PORT:
+        description: Server port to ssh into
+        required: true
+      DOPPLER_TOKEN:
+        description: Doppler token for setting up secrets
+        required: true
+      DOCKER_HUB_USERNAME:
+        description: Docker Username
+        required: true
+      DOCKER_HUB_ACCESS_TOKEN:
+        description: Docker Acces token to access DockerHub Registry
+        required: true
+
+jobs:
+  push-docker-image:
+    runs-on: ${{ inputs.runs-on }}
+    steps:
+      - name: Test
+        run: echo "Hello World"
