@@ -13,10 +13,6 @@ on:
         description: Folder to create website in
         type: string
         required: true
-      owner_name:
-        description: NAme of owner or organization
-        type: string
-        required: true
       repo_name:
         description: Name of repo
         type: string
@@ -48,19 +44,19 @@ on:
         description: Server port to ssh into
         required: true
       AWS_ACCESS_KEY_ID:
-        description: Server port to ssh into
+        description: Aws Access Key Id
         required: true
       AWS_SECRET_ACCESS_KEY:
-        description: Server port to ssh into
-        required: true
-      AWS_S3_BUCKET:
-        description: Server port to ssh into
-        required: true
-      CLOUDFRONT_DISTRIBUTION_ID:
-        description: Server port to ssh into
+        description: Aws Secret Access Key
         required: true
       AWS_REGION:
-        description: Server port to ssh into
+        description: Aws Region
+        required: true
+      AWS_S3_BUCKET:
+        description: Aws S3 Bucket
+        required: true
+      CLOUDFRONT_DISTRIBUTION_ID:
+        description: Cloudfront Distribution Id
         required: true
 
 jobs:
@@ -92,6 +88,10 @@ jobs:
 
       - name: Check CloudFront Invalidation Path
         if: startsWith(env.CLOUDFRONT_INVALIDATION_PATHS, '/') != true
+        # IFS (Internal Field Separator) is set to a comma (','), and the read command is used to split
+        # the paths variable into an array called path_array. The for loop iterates over the array and
+        # adds a leading slash to each path if it doesn't already have one. The modified paths are then
+        # added to a new array called modified_paths. The path_array is then set to the modified_paths
         run: |
           paths="$CLOUDFRONT_INVALIDATION_PATHS"
           IFS=',' read -ra path_array <<< "$paths"
