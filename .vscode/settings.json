@@ -1,0 +1,13 @@
+{
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#27310A",
+    "titleBar.activeBackground": "#36450F",
+    "titleBar.activeForeground": "#F9FCEF"
+  },
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": [
+      "file:///c%3A/Users/johnm/source/repos/Reusable-Workflows/.github/workflows/deploy.yml",
+      "file:///c%3A/Users/johnm/source/repos/Reusable-Workflows/.github/workflows/environment_deploy.yml"
+    ]
+  }
+}

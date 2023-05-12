@@ -1,6 +1,6 @@
 name: >-
   Publish static Website into Production Server
-  
+
 on:
   workflow_call:
     inputs:
@@ -11,16 +11,16 @@ on:
       folder_path:
         description: Folder to create website in
         type: string
-        required: true  
+        required: true
       owner_name:
         description: NAme of owner or organization
         type: string
-        required: true 
+        required: true
       repo_name:
         description: Name of repo
         type: string
         required: true
-        
+
     secrets:
       SERVER_SSH_HOST:
         description: Server IP to deploy on
@@ -34,28 +34,27 @@ on:
       SERVER_SSH_PORT:
         description: Server port to ssh into
         required: true
- 
 
 jobs:
   rsync-updates-to-server:
     runs-on: ${{ inputs.runs-on }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v3
-    
-    - name: Deply with rsync 
-      uses: burnett01/rsync-deployments@5.2.1
-      env: 
-        DEPLOY_FOLDER: ${{ inputs.folder_path }}/${{ inputs.repo_name }}
-      with:
-        # use --mkpath if using Ubuntu 22.04 - --mkpath not supported in rsync 3.1.3 Ubuntu 20.04 GitHub Action Runner
-        switches: -avzr --delete --exclude='/.git' --rsync-path="mkdir -p $DEPLOY_FOLDER && rsync" 
-        path: ./
-        remote_path: $DEPLOY_FOLDER
-        remote_host: ${{ secrets.SERVER_SSH_HOST }}
-        remote_user: ${{ secrets.SERVER_SSH_USERNAME }}
-        remote_port: ${{ secrets.SERVER_SSH_PORT }}
-        remote_key: ${{ secrets.SERVER_SSH_KEY }}
+      - uses: actions/checkout@v3
+
+      - name: Deply with rsync
+        uses: burnett01/rsync-deployments@5.2.1
+        env:
+          DEPLOY_FOLDER: ${{ inputs.folder_path }}/${{ inputs.repo_name }}
+        with:
+          # use --mkpath if using Ubuntu 22.04 - --mkpath not supported in rsync 3.1.3 Ubuntu 20.04 GitHub Action Runner
+          switches: -avzr --delete --exclude='/.git' --rsync-path="mkdir -p $DEPLOY_FOLDER && rsync"
+          path: ./
+          remote_path: $DEPLOY_FOLDER
+          remote_host: ${{ secrets.SERVER_SSH_HOST }}
+          remote_user: ${{ secrets.SERVER_SSH_USERNAME }}
+          remote_port: ${{ secrets.SERVER_SSH_PORT }}
+          remote_key: ${{ secrets.SERVER_SSH_KEY }}
 
   ssh-deploy-website:
     needs: rsync-updates-to-server
@@ -63,7 +62,7 @@ jobs:
     steps:
       - name: SSH into Dev Server
         uses: appleboy/ssh-action@v0.1.7
-        env: 
+        env:
           DEPLOY_FOLDER: ${{ inputs.folder_path }}/${{ inputs.repo_name }}
         with:
           host: ${{ secrets.SERVER_SSH_HOST }}
@@ -75,5 +74,3 @@ jobs:
             chown -R www-data:www-data $DEPLOY_FOLDER
             systemctl reload nginx
             exit
-            
-

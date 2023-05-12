@@ -108,8 +108,7 @@ jobs:
         if: startsWith(${{ inputs.project-path }}, 'none')
         run: |
           echo "PROJECT_PATH=$(find $BUILD_PATH | grep "${{ inputs.project-name }}.csproj")" >> $GITHUB_ENV
-          
-          
+
       - name: Restore dependencies
         run: dotnet restore $PROJECT_PATH
 
@@ -119,22 +118,22 @@ jobs:
       - name: Test
         if: ${{ inputs.run-tests }}
         run: dotnet test $PROJECT_PATH --no-build --verbosity normal
-        
+
       - name: Publish
         run: |
           dotnet publish $PROJECT_PATH --os linux \
           --arch x64 -c Release -p:PublishProfile=DefaultContainer,ContainerImageName=${{ inputs.image-name }}
-        
+
       - name: List & Tag Docker Images
         run: |
           img=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep ${{ inputs.image-name }})
           docker tag $img  murphymurph21/${{ inputs.image-name }}:latest
-        
+
       - name: Save Docker image to compressed file - tar.gz
         run: |
           mkdir -p artifact
           docker save murphymurph21/${{ inputs.image-name }}:latest | gzip > artifact/docker-image.tar.gz
-        
+
       - name: Upload Build Artifact
         if: ${{ inputs.cache }}
         uses: actions/upload-artifact@v3

@@ -12,7 +12,7 @@ name: >-
         description: Docker Image name
         required: true
         default: dev
-        type: choice 
+        type: choice
         options:
           - dev
           - staging

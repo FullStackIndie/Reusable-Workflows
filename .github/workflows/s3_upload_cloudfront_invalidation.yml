@@ -1,0 +1,102 @@
+name: >-
+  Publish static Website into Production Server
+  that uses S3 and CloudFront
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: Platform to execute on
+        type: string
+        default: ubuntu-latest
+      folder_path:
+        description: Folder to create website in
+        type: string
+        required: true
+      owner_name:
+        description: Name of owner or organization
+        type: string
+        required: true
+      repo_name:
+        description: Name of repo
+        type: string
+        required: true
+      source_folder:
+        description: Source Directory containing files to upload
+        type: string
+        default: "./"
+      dest_folder:
+        description: Source Directory containing files to upload
+        type: string
+        default: "/"
+      invalidation_path:
+        description: Cloudfront cache invalidation path
+        type: string
+        default: "/*"
+      exlude_list:
+        description: List of exclude paths for AWS S3 Sync not to copy to bucket
+        type: string
+        default: "none"
+
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        description: Server port to ssh into
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: Server port to ssh into
+        required: true
+      AWS_S3_BUCKET:
+        description: Server port to ssh into
+        required: true
+      CLOUDFRONT_DITRIBUTION_ID:
+        description: Server port to ssh into
+        required: true
+      AWS_REGION:
+        description: Server port to ssh into
+        required: true
+
+jobs:
+  cp-files-to-s3-invalidate-cloudfront:
+    runs-on: ${{ inputs.runs-on }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      SOURCE_DIR: ${{ inputs.source_folder }}
+      DEST_DIR: ${{ inputs.dest_folder }}
+      CLOUDFRONT_INVALIDATION_PATH: ${{ inputs.invalidation_path }}
+      DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DITRIBUTION_ID }}
+
+    steps:
+      - name: Checkout Repo to Upload files # Checks-out repo under $GITHUB_WORKSPACE, so your job can access it
+        uses: actions/checkout@v3
+
+      - name: Check S3 Path
+        if: startsWith(env.DEST_DIR, '/') != true
+        run: |
+          echo "DEST_DIR=/$DEST_DIR" >> $GITHUB_ENV
+
+      - name: Sync files to Aws S3 with --exclude flags from user input
+        if: startsWith(${{ inputs.exlude_list }}, 'none') != true
+        run: |
+          exclude_list="${{ inputs.exlude_list }}"
+          aws s3 sync $SOURCE_DIR s3://$AWS_S3_BUCKET$DEST_DIR --follow-symlinks --delete --cache-control 'public,max-age=31536000' \
+          --exclude ".git/*, .vscode/*, *.html, *.gitignore, .github/*, *.txt, License/*" --exclude="$exclude_list"
+
+      - name: Sync files to Aws S3
+        if: startsWith(${{ inputs.exlude_list }}, 'none')
+        run: |
+          aws s3 sync $SOURCE_DIR s3://$AWS_S3_BUCKET$DEST_DIR --follow-symlinks --delete --cache-control 'public,max-age=31536000' \
+          --exclude '.git/*' --exclude '.vscode/*' --exclude '*.html' --exclude '*.gitignore' --exclude '.github/*' --exclude '*.txt' --exclude 'License/*'
+
+      - name: Check CloudFront Invalidation Path
+        if: startsWith(env.CLOUDFRONT_INVALIDATION_PATH, '/') != true
+        run: |
+          echo "CLOUDFRONT_INVALIDATION_PATH=/$CLOUDFRONT_INVALIDATION_PATH" >> $GITHUB_ENV
+
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID \
+          --paths $CLOUDFRONT_INVALIDATION_PATH
+
