@@ -1,6 +1,5 @@
 name: >-
-  Publish static Website into Production Server
-  that uses S3 and CloudFront
+  Upload Static Assets to S3 and Invalidate CloudFront
 
 on:
   workflow_call:
@@ -29,8 +28,8 @@ on:
         description: Source Directory containing files to upload
         type: string
         default: "/"
-      invalidation_path:
-        description: Cloudfront cache invalidation path
+      invalidation_paths:
+        description: Cloudfront cache invalidation paths - Separate multiple paths with comma
         type: string
         default: "/*"
       exlude_list:
@@ -48,7 +47,7 @@ on:
       AWS_S3_BUCKET:
         description: Server port to ssh into
         required: true
-      CLOUDFRONT_DITRIBUTION_ID:
+      CLOUDFRONT_DISTRIBUTION_ID:
         description: Server port to ssh into
         required: true
       AWS_REGION:
@@ -65,8 +64,8 @@ jobs:
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
       SOURCE_DIR: ${{ inputs.source_folder }}
       DEST_DIR: ${{ inputs.dest_folder }}
-      CLOUDFRONT_INVALIDATION_PATH: ${{ inputs.invalidation_path }}
-      DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DITRIBUTION_ID }}
+      CLOUDFRONT_INVALIDATION_PATHS: ${{ inputs.invalidation_paths }}
+      DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
 
     steps:
       - name: Checkout Repo to Upload files # Checks-out repo under $GITHUB_WORKSPACE, so your job can access it
@@ -91,12 +90,23 @@ jobs:
           --exclude '.git/*' --exclude '.vscode/*' --exclude '*.html' --exclude '*.gitignore' --exclude '.github/*' --exclude '*.txt' --exclude 'License/*'
 
       - name: Check CloudFront Invalidation Path
-        if: startsWith(env.CLOUDFRONT_INVALIDATION_PATH, '/') != true
+        if: startsWith(env.CLOUDFRONT_INVALIDATION_PATHS, '/*') != true
+        # IFS (Internal Field Separator) is set to a comma (','), and the read command is used to split
+        # the paths variable into an array called path_array.
         run: |
-          echo "CLOUDFRONT_INVALIDATION_PATH=/$CLOUDFRONT_INVALIDATION_PATH" >> $GITHUB_ENV
+          paths="$CLOUDFRONT_INVALIDATION_PATHS"
+          IFS=',' read -ra path_array <<< "$paths"
+          modified_paths=()
+          for path in "${path_array[@]}"; do
+            if [[ ! $path =~ ^/ ]]; then
+              path="/$path"
+            fi
+            modified_paths+=("$path")
+          done
+          path_array=("${modified_paths[@]}")
+          echo "CLOUDFRONT_INVALIDATION_PATHS=${path_array[@]}" >> $GITHUB_ENV
 
       - name: Invalidate CloudFront Cache
         run: |
           aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID \
-          --paths $CLOUDFRONT_INVALIDATION_PATH
-
+          --paths $CLOUDFRONT_INVALIDATION_PATHS
