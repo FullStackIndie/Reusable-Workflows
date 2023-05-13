@@ -75,9 +75,8 @@ jobs:
       - name: Sync files to Aws S3
         run: |
           echo "Path of Sitemap = ${{ steps.sitemap.outputs.sitemap-path }}"
-          echo "Path=${{ steps.sitemap.outputs.sitemap-path }}"
-          ls -R
-          aws s3 sync $PATH s3://$AWS_S3_BUCKET$DEST_DIR --follow-symlinks --cache-control 'public,max-age=31536000' \
+          ls ${{ steps.sitemap.outputs.sitemap-path }}
+          aws s3 sync ${{ steps.sitemap.outputs.sitemap-path }} s3://$AWS_S3_BUCKET$DEST_DIR --follow-symlinks --cache-control 'public,max-age=31536000' \
           --exclude '.git/*' --exclude '.vscode/*' --exclude '*.html' --exclude '*.gitignore' --exclude '.github/*' --exclude '*.txt' --exclude 'License/*'
 
       - name: Check CloudFront Invalidation Path
