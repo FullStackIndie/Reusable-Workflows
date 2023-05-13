@@ -53,6 +53,29 @@ name: >-
         description: Docker Acces token to access DockerHub Registry
         required: true
 
+  workflow_dispatch:
+    inputs:
+      runs-on:
+        description: Platform to execute on
+        type: string
+        default: ubuntu-latest
+      image-name:
+        description: Docker Image name
+        type: string
+        required: true
+      docker-compose-file:
+        description: Docker Compose filename
+        type: string
+        required: true
+      docker-compose-dir:
+        description: Docker Compose directory
+        type: string
+        required: true
+      cache-key:
+        description: Cache key for uploading build artifacts
+        type: string
+        required: true
+
 jobs:
   push-docker-image:
     runs-on: ${{ inputs.runs-on }}

@@ -7,7 +7,8 @@
   "yaml.schemas": {
     "https://json.schemastore.org/github-workflow.json": [
       "file:///c%3A/Users/johnm/source/repos/Reusable-Workflows/.github/workflows/deploy.yml",
-      "file:///c%3A/Users/johnm/source/repos/Reusable-Workflows/.github/workflows/environment_deploy.yml"
+      "file:///c%3A/Users/johnm/source/repos/Reusable-Workflows/.github/workflows/environment_deploy.yml",
+      "file:///c%3A/Users/johnm/source/repos/Reusable-Workflows/.github/workflows/create_sitemap_upload_s3_cloudfront_invalidation.yml"
     ]
   }
 }
