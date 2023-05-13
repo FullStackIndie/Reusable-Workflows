@@ -83,7 +83,7 @@ jobs:
       - name: Sync files to Aws S3
         run: |
           aws s3 sync ${{ github.workspace }}/sitemap/deploy s3://$AWS_S3_BUCKET$DEST_DIR/SEO --follow-symlinks --cache-control 'public,max-age=31536000' \
-          --exclude '.git/*' --exclude '.vscode/*' --exclude '*.html' --exclude '*.gitignore' --exclude '.github/*' --exclude '*.txt' --exclude 'License/*'
+          --exclude '.git/*' --exclude '.vscode/*' --exclude '*.gitignore' --exclude '.github/*'
 
       - name: Check CloudFront Invalidation Path
         if: startsWith(env.CLOUDFRONT_INVALIDATION_PATHS, '/') != true
