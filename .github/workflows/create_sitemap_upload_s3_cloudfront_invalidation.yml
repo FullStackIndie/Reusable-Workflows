@@ -69,8 +69,10 @@ jobs:
           cache: ${{ inputs.cache }}
           cache-key: ${{ inputs.cache-key }}
 
-      # - name: Checkout Repo to Upload files # Checks-out repo under $GITHUB_WORKSPACE, so your job can access it
-      #   uses: actions/checkout@v3
+      - name: Check S3 Path
+        if: startsWith(env.DEST_DIR, '/') != true
+        run: |
+          echo "DEST_DIR=/$DEST_DIR" >> $GITHUB_ENV
 
       - name: Sync files to Aws S3
         run: |
