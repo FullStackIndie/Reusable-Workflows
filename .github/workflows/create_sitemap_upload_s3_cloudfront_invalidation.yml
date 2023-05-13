@@ -8,6 +8,20 @@ on:
         description: Platform to execute on
         type: string
         default: ubuntu-latest
+      url:
+        description: "Your website domain to crawl. Must start with http:// or https://"
+        type: string
+        required: true
+      cache:
+        description: "Should the Sitemap be cached to be used in another job."
+        required: false
+        type: boolean
+        default: false
+      cache-key:
+        description: "The cache key to upload artifact. You will use the same key to download the artifact. Default: sitemap"
+        required: false
+        type: string
+        default: "sitemap"
       dest_folder:
         description: Destitnation Directory or file path inside of S3 Bucket. Default root
         type: string
@@ -51,9 +65,9 @@ jobs:
         id: sitemap
         uses: FullStackIndie/sitemap-generator@v1.2.5
         with:
-          url: https://portfolio.fullstackindie.net
-          cache: "false"
-          cache-key: sitemap
+          url: ${{ inputs.url }}
+          cache: ${{ inputs.cache }}
+          cache-key: ${{ inputs.cache-key }}
 
       # - name: Checkout Repo to Upload files # Checks-out repo under $GITHUB_WORKSPACE, so your job can access it
       #   uses: actions/checkout@v3
