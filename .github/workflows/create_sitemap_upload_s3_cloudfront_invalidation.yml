@@ -49,7 +49,7 @@ jobs:
     steps:
       - name: Create a Sitemap
         id: sitemap
-        uses: FullStackIndie/sitemap-generator@v1.2.4
+        uses: FullStackIndie/sitemap-generator@v1.2.5
         with:
           url: https://portfolio.fullstackindie.net
           cache: "false"
