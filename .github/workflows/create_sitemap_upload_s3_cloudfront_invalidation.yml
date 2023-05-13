@@ -69,6 +69,12 @@ jobs:
           cache: ${{ inputs.cache }}
           cache-key: ${{ inputs.cache-key }}
 
+      - name: Move Sitemap to new directory
+        run: |
+          mkdir ${{ github.workspace }}/sitemap/deploy
+          mv ${{ steps.sitemap.outputs.sitemap-path }}/sitemap.xml ${{ github.workspace }}/sitemap/deploy/sitemap.xml
+          mv ${{ steps.sitemap.outputs.sitemap-path }}/sitemap_generator_logs.txt ${{ github.workspace }}/sitemap/deploy/sitemap_generator_logs.txt
+
       - name: Check S3 Path
         if: startsWith(env.DEST_DIR, '/') != true
         run: |
@@ -76,9 +82,7 @@ jobs:
 
       - name: Sync files to Aws S3
         run: |
-          echo "Path of Sitemap = ${{ steps.sitemap.outputs.sitemap-path }}"
-          ls ${{ steps.sitemap.outputs.sitemap-path }}
-          aws s3 sync ${{ steps.sitemap.outputs.sitemap-path }} s3://$AWS_S3_BUCKET$DEST_DIR --follow-symlinks --cache-control 'public,max-age=31536000' \
+          aws s3 sync ${{ github.workspace }}/sitemap/deploy s3://$AWS_S3_BUCKET$DEST_DIR/SEO --follow-symlinks --cache-control 'public,max-age=31536000' \
           --exclude '.git/*' --exclude '.vscode/*' --exclude '*.html' --exclude '*.gitignore' --exclude '.github/*' --exclude '*.txt' --exclude 'License/*'
 
       - name: Check CloudFront Invalidation Path
