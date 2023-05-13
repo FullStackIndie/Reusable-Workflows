@@ -71,7 +71,7 @@ jobs:
 
       - name: Move Sitemap to new directory
         run: |
-          mkdir -R ${{ github.workspace }}/sitemap/deploy
+          mkdir -p ${{ github.workspace }}/sitemap/deploy
           mv ${{ steps.sitemap.outputs.sitemap-path }}/sitemap.xml ${{ github.workspace }}/sitemap/deploy/sitemap.xml
           mv ${{ steps.sitemap.outputs.sitemap-path }}/sitemap_generator_logs.txt ${{ github.workspace }}/sitemap/deploy/sitemap_generator_logs.txt
 
