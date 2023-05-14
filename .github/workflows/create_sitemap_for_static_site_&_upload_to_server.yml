@@ -60,9 +60,9 @@ jobs:
 
       - name: Move Sitemap to new directory
         run: |
-          mkdir -p ${{ github.workspace }}/sitemap/deploy
-          mv ${{ steps.sitemap.outputs.sitemap-path }}/sitemap.xml ${{ github.workspace }}/sitemap/deploy/sitemap.xml
-          mv ${{ steps.sitemap.outputs.sitemap-path }}/sitemap_generator_logs.txt ${{ github.workspace }}/sitemap/deploy/sitemap_generator_logs.txt
+          mkdir -p /github/workspace/sitemap/deploy
+          mv ${{ steps.sitemap.outputs.sitemap-path }}/sitemap.xml /github/workspace/sitemap/deploy/sitemap.xml
+          mv ${{ steps.sitemap.outputs.sitemap-path }}/sitemap_generator_logs.txt /github/workspace/sitemap/deploy/sitemap_generator_logs.txt
 
       - name: Deploy with rsync
         uses: burnett01/rsync-deployments@5.2.1
@@ -73,7 +73,7 @@ jobs:
           switches:
             -avzr --delete-excluded --include='*.txt'--include='*.xml' --exclude='*'
             --rsync-path="mkdir -p $DEPLOY_FOLDER && rsync"
-          path: ${{ inputs.repo_name }}/${{ inputs.repo_name }}/sitemap/deploy/
+          path: sitemap/deploy/
           remote_path: $DEPLOY_FOLDER
           remote_host: ${{ secrets.SERVER_SSH_HOST }}
           remote_user: ${{ secrets.SERVER_SSH_USERNAME }}
