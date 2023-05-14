@@ -1,0 +1,100 @@
+name: >-
+  Publish static Website into Production Server
+  upload static assets to S3 and invalidate CloudFront
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: Platform to execute on
+        type: string
+        default: ubuntu-latest
+      url:
+        description: "Your website domain to crawl. Must start with http:// or https://"
+        type: string
+        required: true
+      cache:
+        description: "Should the Sitemap be cached to be used in another job."
+        required: false
+        type: boolean
+        default: false
+      cache-key:
+        description: "The cache key to upload artifact. You will use the same key to download the artifact. Default: sitemap"
+        required: false
+        type: string
+        default: "sitemap"
+      folder_path:
+        description: Folder to Upload Sitemap and logs to
+        type: string
+        required: true
+      repo_name:
+        description: Name of repo
+        type: string
+        required: true
+
+    secrets:
+      SERVER_SSH_HOST:
+        description: Server IP to deploy on
+        required: true
+      SERVER_SSH_USERNAME:
+        description: Server user
+        required: true
+      SERVER_SSH_KEY:
+        description: Server ssh key
+        required: true
+      SERVER_SSH_PORT:
+        description: Server port to ssh into
+        required: true
+
+jobs:
+  rsync-updates-to-server:
+    runs-on: ${{ inputs.runs-on }}
+    steps:
+      - name: Create a Sitemap
+        id: sitemap
+        uses: FullStackIndie/sitemap-generator@v1.3.0
+        with:
+          url: ${{ inputs.url }}
+          cache: ${{ inputs.cache }}
+          cache-key: ${{ inputs.cache-key }}
+
+      - name: Move Sitemap to new directory
+        run: |
+          mkdir -p ${{ github.workspace }}/sitemap/deploy
+          mv ${{ steps.sitemap.outputs.sitemap-path }}/sitemap.xml ${{ github.workspace }}/sitemap/deploy/sitemap.xml
+          mv ${{ steps.sitemap.outputs.sitemap-path }}/sitemap_generator_logs.txt ${{ github.workspace }}/sitemap/deploy/sitemap_generator_logs.txt
+
+      - name: Deploy with rsync
+        uses: burnett01/rsync-deployments@5.2.1
+        env:
+          DEPLOY_FOLDER: ${{ inputs.folder_path }}/${{ inputs.repo_name }}/SEO
+        with:
+          # use --mkpath if using Ubuntu 22.04 - --mkpath not supported in rsync 3.1.3 Ubuntu 20.04 GitHub Action Runner
+          switches:
+            -avzr --delete-excluded --include='*.txt'--include='*.xml' --exclude='*'
+            --rsync-path="mkdir -p $DEPLOY_FOLDER && rsync"
+          path: ${{ github.workspace }}/sitemap/deploy/
+          remote_path: $DEPLOY_FOLDER
+          remote_host: ${{ secrets.SERVER_SSH_HOST }}
+          remote_user: ${{ secrets.SERVER_SSH_USERNAME }}
+          remote_port: ${{ secrets.SERVER_SSH_PORT }}
+          remote_key: ${{ secrets.SERVER_SSH_KEY }}
+
+  ssh-deploy-website:
+    needs: rsync-updates-to-server
+    runs-on: ${{ inputs.runs-on }}
+    steps:
+      - name: SSH into Dev Server
+        uses: appleboy/ssh-action@v0.1.7
+        env:
+          DEPLOY_FOLDER: ${{ inputs.folder_path }}/${{ inputs.repo_name }}/SEO
+        with:
+          host: ${{ secrets.SERVER_SSH_HOST }}
+          username: ${{ secrets.SERVER_SSH_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          envs: DEPLOY_FOLDER
+          script: |
+            chown -R www-data:www-data $DEPLOY_FOLDER
+            systemctl reload nginx
+            exit
