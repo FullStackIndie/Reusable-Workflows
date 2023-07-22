@@ -15,6 +15,10 @@ on:
         description: Project name - If project path is not specified Project Name will be used with .Net default folder naming convention
         type: string
         required: true
+      repo-name:
+        description: Repo name - If value is not set it will be the same as project-name value  
+        type: string
+        default: "none"
       project-path:
         description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
         type: string
@@ -79,8 +83,9 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: us-west-2
       PROJECT_PATH: ${{ inputs.project-path }}
-      BUILD_PATH: "/home/runner/work/${{ inputs.project-name }}"
-      CACHE_PATH: "/home/runner/work/${{ inputs.project-name }}/${{ inputs.project-name }}"
+      REPO_NAME: ${{ inputs.repo-name }}
+      BUILD_PATH: "/home/runner/work/${{ inputs.repo-name }}"
+      CACHE_PATH: "/home/runner/work/${{ inputs.repo-name }}/${{ inputs.project-name }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -108,6 +113,12 @@ jobs:
         if: startsWith(${{ inputs.project-path }}, 'none')
         run: |
           echo "PROJECT_PATH=$(find $BUILD_PATH | grep "${{ inputs.project-name }}.csproj")" >> $GITHUB_ENV
+
+      - name: Check if Repo Name was set
+        if: startsWith(${{ inputs.repo-name }}, 'none')
+        run: |
+          echo "REPO_NAME=${{ inputs.repo-name }}" >> $GITHUB_ENV
+
 
       - name: Restore dependencies
         run: dotnet restore $PROJECT_PATH
