@@ -16,7 +16,7 @@ on:
         type: string
         required: true
       repo-name:
-        description: Repo name - If value is not set it will be the same as project-name value  
+        description: Repo name - If value is not set it will be the same as project-name value
         type: string
         default: "none"
       project-path:
@@ -39,6 +39,16 @@ on:
         description: Upload build artifacts?
         type: boolean
         default: true
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        description: Aws Access Key Id
+        required: true
+      AWS_REGION:
+        description: Aws Region
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: Aws Secret Access Key
+        required: true
 
   workflow_dispatch:
     inputs:
@@ -118,7 +128,6 @@ jobs:
         if: startsWith(${{ inputs.repo-name }}, 'none')
         run: |
           echo "REPO_NAME=${{ inputs.repo-name }}" >> $GITHUB_ENV
-
 
       - name: Restore dependencies
         run: dotnet restore $PROJECT_PATH
