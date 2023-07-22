@@ -37,9 +37,9 @@ name: >-
       SERVER_SSH_KEY:
         description: Server ssh key
         required: true
-      SERVER_SSH_PASSPHRASE:
-        description: Server ssh key passphrase
-        required: true
+      # SERVER_SSH_PASSPHRASE:
+      #   description: Server ssh key passphrase
+      #   required: true
       SERVER_SSH_PORT:
         description: Server port to ssh into
         required: true
