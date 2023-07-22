@@ -37,9 +37,9 @@ name: >-
       SERVER_SSH_KEY:
         description: Server ssh key
         required: true
-      # SERVER_SSH_PASSPHRASE:
-      #   description: Server ssh key passphrase
-      #   required: true
+      SERVER_SSH_PASSPHRASE:
+        description: Server ssh key passphrase
+        required: true
       SERVER_SSH_PORT:
         description: Server port to ssh into
         required: true
@@ -109,7 +109,7 @@ jobs:
           host: ${{ secrets.SERVER_SSH_HOST }}
           username: ${{ secrets.SERVER_SSH_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          # passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
+          passphrase: ${{ secrets.SERVER_SSH_PASSPHRASE }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ inputs.image-name }}:latest
