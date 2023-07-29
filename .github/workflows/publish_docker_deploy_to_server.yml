@@ -52,6 +52,9 @@ name: >-
       DOCKER_HUB_ACCESS_TOKEN:
         description: Docker Acces token to access DockerHub Registry
         required: true
+      OTEL_ENDPOINT:
+        description: Otel Endpoint Url for sending Telemetry
+        required: false
 
   workflow_dispatch:
     inputs:
@@ -115,6 +118,7 @@ jobs:
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ inputs.image-name }}:latest
             cd ${{ inputs.docker-compose-dir }}
             export DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }}
+            export OTEL_ENDPOINT=${{ secrets.OTEL_ENDPOINT }}
             docker compose -f ${{ inputs.docker-compose-file }} down
             doppler run --mount docker-compose.yml --mount-template ${{ inputs.docker-compose-file }} --command 'doppler run -- docker compose up -d'
             exit
