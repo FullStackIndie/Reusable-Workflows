@@ -107,6 +107,8 @@ jobs:
     runs-on: ${{ inputs.runs-on }}
     steps:
       - name: SSH into Dev Server
+        env:
+          OTEL_ENDPOINT: ${{ secrets.OTEL_ENDPOINT }}
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_SSH_HOST }}
@@ -118,9 +120,11 @@ jobs:
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ inputs.image-name }}:latest
             cd ${{ inputs.docker-compose-dir }}
             export DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }}
-            export OTEL_ENDPOINT=${{ secrets.OTEL_ENDPOINT }}
+            echo 'OTEL_ENDPOINT=$OTEL_ENDPOINT' > env.prod
+            echo 'DOPPLER_TOKEN={{ doppler_token_blog }}' >> env.prod
             docker compose -f ${{ inputs.docker-compose-file }} down
             doppler run --mount docker-compose.yml --mount-template ${{ inputs.docker-compose-file }} --command 'doppler run -- docker compose up -d'
+            rm env.prod
             exit
 
       - uses: geekyeggo/delete-artifact@v2
