@@ -10,7 +10,7 @@ on:
       dotnet-version:
         description: Version of dotnet to use
         type: string
-        default: 7.0.x
+        default: 8.0.x
       project-name:
         description: Project name - If project path is not specified Project Name will be used with .Net default folder naming convention
         type: string
@@ -59,7 +59,7 @@ on:
       dotnet-version:
         description: Version of dotnet to use
         type: string
-        default: 7.0.x
+        default: 8.0.x
       project-name:
         description: Project name - If project path is not specified Project Name will be used with .Net default folder naming convention
         type: string

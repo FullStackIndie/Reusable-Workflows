@@ -1,0 +1,95 @@
+name: >-
+  upload static assets to S3 and invalidate CloudFront
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: Platform to execute on
+        type: string
+        default: ubuntu-latest
+      repo_name:
+        description: Name of repo
+        type: string
+        required: true
+      source_folder:
+        description: Source Directory containing files to upload
+        type: string
+        default: "./"
+      dest_folder:
+        description: Source Directory containing files to upload
+        type: string
+        default: "/"
+      invalidation_paths:
+        description: Cloudfront cache invalidation paths - Separate multiple paths with comma
+        type: string
+        default: "/*"
+
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        description: Aws Access Key Id
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: Aws Secret Access Key
+        required: true
+      AWS_REGION:
+        description: Aws Region
+        required: true
+      AWS_S3_BUCKET:
+        description: Aws S3 Bucket
+        required: true
+      CLOUDFRONT_DISTRIBUTION_ID:
+        description: Cloudfront Distribution Id
+        required: true
+
+jobs:
+  cp-files-to-s3-invalidate-cloudfront:
+    runs-on: ${{ inputs.runs-on }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      SOURCE_DIR: ${{ inputs.source_folder }}
+      DEST_DIR: ${{ inputs.dest_folder }}
+      CLOUDFRONT_INVALIDATION_PATHS: ${{ inputs.invalidation_paths }}
+      DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
+    steps:
+      - name: Checkout Repo to Upload files # Checks-out repo under $GITHUB_WORKSPACE, so your job can access it
+        uses: actions/checkout@v3
+
+      - name: Check S3 Path
+        if: startsWith(env.DEST_DIR, '/') != true
+        run: |
+          echo "DEST_DIR=/$DEST_DIR" >> $GITHUB_ENV
+
+      - name: Sync files to Aws S3
+        run: |
+          aws s3 sync $SOURCE_DIR s3://$AWS_S3_BUCKET$DEST_DIR --follow-symlinks --delete --cache-control 'public,max-age=31536000' \
+          --exclude '.git/*' --exclude '.vscode/*' --exclude '*.html' --exclude '*.gitignore' --exclude '.github/*' --exclude '*.txt' --exclude 'License/*'
+
+      - name: Check CloudFront Invalidation Path
+        if: startsWith(env.CLOUDFRONT_INVALIDATION_PATHS, '/') != true
+        # IFS (Internal Field Separator) is set to a comma (','), and the read command is used to split
+        # the paths variable into an array called path_array. The for loop iterates over the array and
+        # adds a leading slash to each path if it doesn't already have one. The modified paths are then
+        # added to a new array called modified_paths. The path_array is then set to the modified_paths
+        run: |
+          paths="$CLOUDFRONT_INVALIDATION_PATHS"
+          IFS=',' read -ra path_array <<< "$paths"
+          modified_paths=()
+          for path in "${path_array[@]}"; do
+            if [[ ! $path =~ ^/ ]]; then
+              path="/$path"
+            fi
+            modified_paths+=("$path")
+          done
+          path_array=("${modified_paths[@]}")
+          echo "CLOUDFRONT_INVALIDATION_PATHS=${path_array[@]}" >> $GITHUB_ENV
+
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID \
+          --paths $CLOUDFRONT_INVALIDATION_PATHS
+
