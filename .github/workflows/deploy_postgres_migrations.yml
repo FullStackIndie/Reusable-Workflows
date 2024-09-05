@@ -1,0 +1,82 @@
+name: Setup, Build, & Publish to DockerHub .Net Project as Artifact with Aws Code Artifact as Nuget Package Manager
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: Platform to execute on
+        type: string
+        default: ubuntu-latest
+      project-name:
+        description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
+        type: string
+        default: "none"
+      migration-folder-path:
+        description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
+        type: string
+        default: "Data/Migrations"
+      double-folder-path:
+        description: Uses .Net default folder naming convention "ProjectName/ProjectName/*.csproj"
+        type: boolean
+        default: true
+      context-paths-values:
+        description: Comma seperated string of Context Names to migrate to the database "contex-1,context-2"
+        type: string
+        default: "none"
+    secrets:
+      DB_CONNECTION_STRING:
+        description: Postgres DB Connection String
+        required: true
+
+jobs:
+
+  prepare-context-paths:
+    runs-on: ubuntu-latest
+    outputs:
+      context-paths-values: ${{ steps.prepare-context-paths.outputs.context-paths-values }}
+    steps:
+      - name: Prepare context-paths values in bash
+        id: prepare-context-paths
+        run: |
+          # Capture the input
+          context-paths-values="${{ inputs.context-paths-values }}"
+          
+          # Split the input by comma into a Bash array
+          IFS=',' read -r -a array <<< "$context-paths-values"
+
+          # Convert the array into JSON format
+          json_array=$(printf '%s\n' "${array[@]}" | jq -R . | jq -s .)
+          
+          # Set the JSON array as output
+          echo "context-paths values: $json_array"
+          echo "::set-output name=context-paths-values::$json_array"
+
+  update_database_migrations:
+    needs: prepare-context-paths
+    runs-on: ${{ inputs.runs-on }}
+    strategy:
+      fail-fast: true
+      matrix:
+        value: ${{ fromJSON(needs.prepare-context-paths.outputs['context-paths-values']) }}
+    steps:
+      - name: Use context-paths value
+        run: |
+          echo "context-paths value: ${{ matrix.value }}"
+
+      - name: Setup project path
+        if: ${{ inputs.double-folder-path }} == true
+        run: |
+          echo "PROJECT_PATH=${{ inputs.project-name }}/${{ inputs.project-name }}" >> $GITHUB_ENV
+
+      - name: Setup project path
+        if: ${{ inputs.double-folder-path }} == false
+        run: |
+          echo "PROJECT_PATH=${{ inputs.project-name }}" >> $GITHUB_ENV
+
+      - name: Warren - Configure .NET SDK
+        uses: warrenbrasil/dotnet-migrations@v3
+        with:
+          project-path: "./$PROJECT_PATH/${{ inputs.migration-folder-path }}"
+          startup-project-path: "./$PROJECT_PATH"
+          context: ${{ matrix.value }}
+          connection: ${{ secrets.DB_CONNECTION_STRING }}
