@@ -87,6 +87,6 @@ jobs:
         uses: warrenbrasil/dotnet-migrations@v3
         with:
           project-path: "./${{ env.PROJECT_PATH }}"
-          startup-project-path: "./"
+          startup-project-path: "./${{ env.PROJECT_PATH }}"
           context: ${{ matrix.value }}
           connection: ${{ secrets.DB_CONNECTION_STRING }}
