@@ -32,7 +32,7 @@ jobs:
   prepare-context-paths:
     runs-on: ubuntu-latest
     outputs:
-      context-path-values: ${{ steps.prepare-context-paths.outputs.context-path-values }}
+      context-path-values: ${{ steps.prepare-context-paths.outputs.CONTEXT_PATH_VALUES }}
     steps:
       - name: Prepare context-paths values in bash
         id: prepare-context-paths
@@ -55,7 +55,7 @@ jobs:
           
           # Set the JSON array as output
           echo "context-paths values: $json_array"
-          echo "::set-output name=context-path-values::$json_array"
+          echo "CONTEXT_PATH_VALUES=$json_array" >> $GITHUB_ENV
 
   update_database_migrations:
     needs: prepare-context-paths
