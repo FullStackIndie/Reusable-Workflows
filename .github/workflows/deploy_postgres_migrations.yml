@@ -31,7 +31,7 @@ jobs:
   sanitize-context-paths:
     runs-on: ubuntu-latest
     outputs:
-      context-path-values: ${{ steps.prepare-context-paths.outputs.context-path-value }}
+      context-path-values: ${{ steps.prepare-context-paths.outputs.context-path-values }}
     steps:
       - name: Prepare context-paths values in bash
         id: prepare-context-paths
@@ -59,6 +59,7 @@ jobs:
   update_database_migrations:
     needs: sanitize-context-paths
     runs-on: ${{ inputs.runs-on }}
+    if: ${{ needs.sanitize-context-paths.outputs.context-path-values != '[]' }} 
     strategy:
       fail-fast: true
       matrix:
