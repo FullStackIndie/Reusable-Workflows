@@ -49,11 +49,10 @@ jobs:
             cleaned_array+=("$cleaned_element")
           done
 
+          # Convert the array into compact JSON format (without pretty-printing)
+          json_array=$(printf '%s\n' "${cleaned_array[@]}" | jq -R . | jq -s -c .)
 
-          # Convert the array into JSON format
-          json_array=$(printf '%s\n' "${cleaned_array[@]}" | jq -R . | jq -s .)
-          
-          # Set the JSON array as output
+          # Set the compact JSON array as output and as an environment variable
           echo "context-paths values: $json_array"
           echo "CONTEXT_PATH_VALUES=$json_array" >> $GITHUB_ENV
 
