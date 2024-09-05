@@ -19,10 +19,9 @@ on:
         description: Uses .Net default folder naming convention "ProjectName/ProjectName/*.csproj"
         type: boolean
         default: true
-      context-paths-values:
+      context-path-values:
         description: Comma seperated string of Context Names to migrate to the database "contex-1,context-2"
         type: string
-        default: "none"
     secrets:
       DB_CONNECTION_STRING:
         description: Postgres DB Connection String
@@ -33,23 +32,30 @@ jobs:
   prepare-context-paths:
     runs-on: ubuntu-latest
     outputs:
-      context-paths-values: ${{ steps.prepare-context-paths.outputs.context-paths-values }}
+      context-path-values: ${{ steps.prepare-context-paths.outputs.context-path-values }}
     steps:
       - name: Prepare context-paths values in bash
         id: prepare-context-paths
         run: |
           # Capture the input
-          context-paths-values="${{ inputs.context-paths-values }}"
+          context_path_values="${{ inputs.context-path-values }}"
           
           # Split the input by comma into a Bash array
-          IFS=',' read -r -a array <<< "$context-paths-values"
+          IFS=',' read -r -a array <<< "$context_path_values"
+
+          cleaned_array=()
+          for element in "${array[@]}"; do
+            cleaned_element=$(echo "$element" | sed 's/^[ \t]*//;s/[ \t]*$//')
+            cleaned_array+=("$cleaned_element")
+          done
+
 
           # Convert the array into JSON format
-          json_array=$(printf '%s\n' "${array[@]}" | jq -R . | jq -s .)
+          json_array=$(printf '%s\n' "${cleaned_array[@]}" | jq -R . | jq -s .)
           
           # Set the JSON array as output
           echo "context-paths values: $json_array"
-          echo "::set-output name=context-paths-values::$json_array"
+          echo "::set-output name=context-path-values::$json_array"
 
   update_database_migrations:
     needs: prepare-context-paths
@@ -57,7 +63,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        value: ${{ fromJSON(needs.prepare-context-paths.outputs['context-paths-values']) }}
+        value: ${{ fromJSON(needs.prepare-context-paths.outputs['context-path-values']) }}
     steps:
       - name: Use context-paths value
         run: |
