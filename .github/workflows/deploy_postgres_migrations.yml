@@ -70,18 +70,18 @@ jobs:
           echo "context-paths value: ${{ matrix.value }}"
 
       - name: Setup project path
-        if: ${{ inputs.double-folder-path }} == true
+        if: ${{ inputs.double-folder-path  == true }}
         run: |
           echo "PROJECT_PATH=${{ inputs.project-name }}/${{ inputs.project-name }}" >> $GITHUB_ENV
 
       - name: Setup project path
-        if: ${{ inputs.double-folder-path }} == false
+        if: ${{ inputs.double-folder-path == false }} 
         run: |
           echo "PROJECT_PATH=${{ inputs.project-name }}" >> $GITHUB_ENV
 
       - name: Verify environment variables
         run: |
-          echo "PROJECT_PATH=${{ env.PROJECT_PATH }}"
+          echo "PROJECT_PATH  : ${{ env.PROJECT_PATH }}"
 
       - name: Warren - Configure .NET SDK
         uses: warrenbrasil/dotnet-migrations@v3
