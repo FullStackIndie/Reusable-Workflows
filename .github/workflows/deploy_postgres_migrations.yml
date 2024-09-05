@@ -79,10 +79,14 @@ jobs:
         run: |
           echo "PROJECT_PATH=${{ inputs.project-name }}" >> $GITHUB_ENV
 
+      - name: Verify environment variables
+        run: |
+          echo "PROJECT_PATH=${{ env.PROJECT_PATH }}"
+
       - name: Warren - Configure .NET SDK
         uses: warrenbrasil/dotnet-migrations@v3
         with:
-          project-path: "./$PROJECT_PATH/${{ inputs.migration-folder-path }}"
-          startup-project-path: "./$PROJECT_PATH"
+          project-path: "./${{ env.PROJECT_PATH }}/${{ inputs.migration-folder-path }}"
+          startup-project-path: "./${{ env.PROJECT_PATH }}"
           context: ${{ matrix.value }}
           connection: ${{ secrets.DB_CONNECTION_STRING }}
