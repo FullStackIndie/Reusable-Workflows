@@ -86,7 +86,7 @@ jobs:
       - name: Warren - Configure .NET SDK
         uses: warrenbrasil/dotnet-migrations@v3
         with:
-          project-path: "${{ inputs.migration-folder-path }}"
+          project-path: "./"
           startup-project-path: "./${{ env.PROJECT_PATH }}"
           context: ${{ matrix.value }}
           connection: ${{ secrets.DB_CONNECTION_STRING }}
