@@ -28,8 +28,7 @@ on:
         required: true
 
 jobs:
-
-  prepare-context-paths:
+  sanitize-context-paths:
     runs-on: ubuntu-latest
     outputs:
       context-path-values: ${{ steps.prepare-context-paths.outputs.CONTEXT_PATH_VALUES }}
@@ -54,15 +53,15 @@ jobs:
 
           # Set the compact JSON array as output and as an environment variable
           echo "context-paths values: $json_array"
-          echo "CONTEXT_PATH_VALUES=$json_array" >> $GITHUB_ENV
+          echo "{CONTEXT_PATH_VALUES}={$json_array}" >> $GITHUB_OUTPUT
 
   update_database_migrations:
-    needs: prepare-context-paths
+    needs: sanitize-context-paths
     runs-on: ${{ inputs.runs-on }}
     strategy:
       fail-fast: true
       matrix:
-        value: ${{ fromJSON(needs.prepare-context-paths.outputs['context-path-values']) }}
+        value: ${{ fromJSON(needs.sanitize-context-paths.outputs['context-path-values']) }}
     steps:
       - name: Use context-paths value
         run: |
