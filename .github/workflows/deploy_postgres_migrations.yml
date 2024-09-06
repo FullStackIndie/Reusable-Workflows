@@ -82,11 +82,10 @@ jobs:
 
 
       - name: Get Code Artifact Token
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-west-2
         run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.AWS_REGION }}
           export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text`
       
       - name: Setup Aws as Nuget
