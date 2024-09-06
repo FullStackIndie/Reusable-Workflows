@@ -68,6 +68,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.1.7
 
+      - name: Setup Dotnet and Install ef core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - run: dotnet tool install --global dotnet-ef
+
+      - name: Verify EF-Core installation & update
+        run: |
+          dotnet ef
+          dotnet tool update dotnet-ef
+
       - name: Use context-paths value
         run: |
           echo "context-paths value: ${{ matrix.value }}"
@@ -86,10 +97,7 @@ jobs:
         run: |
           echo "PROJECT_PATH  : ${{ env.PROJECT_PATH }}"
 
-      - name: Warren - Configure .NET SDK
-        uses: warrenbrasil/dotnet-migrations@v3
-        with:
-          project-path: "./${{ env.PROJECT_PATH }}"
-          startup-project-path: "./${{ env.PROJECT_PATH }}"
-          context: ${{ matrix.value }}
-          connection: ${{ secrets.DB_CONNECTION_STRING }}
+      - name: Verify EF-Core installation & update
+        run: |
+          dotnet ef
+          dotnet tool update dotnet-ef --verbose --project=${{ env.PROJECT_PATH }} --context=${{ matrix.value }} --connection ${{ secrets.DB_CONNECTION_STRING}}
