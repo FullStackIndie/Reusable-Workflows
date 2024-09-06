@@ -65,6 +65,9 @@ jobs:
       matrix:
         value: ${{ fromJSON(needs.sanitize-context-paths.outputs['context-path-values']) }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.7
+
       - name: Use context-paths value
         run: |
           echo "context-paths value: ${{ matrix.value }}"
