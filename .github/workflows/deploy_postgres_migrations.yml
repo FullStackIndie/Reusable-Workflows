@@ -80,6 +80,20 @@ jobs:
           source ~/.bashrc
           dotnet ef --version
 
+      - name: Setup Aws as Nuget
+        run: |
+          aws codeartifact login --tool dotnet --domain fullstackindie --domain-owner 896630178141 --repository fullstackindie
+          aws codeartifact list-packages --domain fullstackindie --repository fullstackindie
+
+      - name: Cache Nuget Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget
+
       - name: Use context-paths value
         run: |
           echo "context-paths value: ${{ matrix.value }}"
