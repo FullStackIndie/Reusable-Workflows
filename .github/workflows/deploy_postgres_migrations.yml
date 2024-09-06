@@ -80,6 +80,15 @@ jobs:
           source ~/.bashrc
           dotnet ef --version
 
+
+      - name: Get Code Artifact Token
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-west-2
+        run: |
+          export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text`
+      
       - name: Setup Aws as Nuget
         run: |
           aws codeartifact login --tool dotnet --domain fullstackindie --domain-owner 896630178141 --repository fullstackindie
