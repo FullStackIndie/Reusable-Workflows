@@ -78,8 +78,7 @@ jobs:
         run: |
           export PATH=$PATH:$HOME/.dotnet/tools
           source ~/.bashrc
-          dotnet ef
-          dotnet tool restore
+          dotnet ef --version
 
       - name: Use context-paths value
         run: |
@@ -102,4 +101,4 @@ jobs:
       - name: Verify EF-Core installation & update
         run: |
           dotnet ef
-          dotnet tool update dotnet-ef --verbose --project=${{ env.PROJECT_PATH }} --context=${{ matrix.value }} --connection ${{ secrets.DB_CONNECTION_STRING}}
+          dotnet ef database update --verbose --project=${{ env.PROJECT_PATH }} --context=${{ matrix.value }} --connection ${{ secrets.DB_CONNECTION_STRING}}
