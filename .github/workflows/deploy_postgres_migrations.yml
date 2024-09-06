@@ -80,6 +80,9 @@ jobs:
           source ~/.bashrc
           dotnet ef --version
 
+      - name: Install AWS CLI
+        run: sudo apt-get install awscli
+
       - name: Get Code Artifact Token
         run: |
           mkdir ~/.aws && cd ~/.aws
@@ -93,12 +96,12 @@ jobs:
 
       - name: Get Code Artifact Token
         run: |
-          export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text --profile github-actions`
+          export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --debug --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text --profile github-actions)
 
       - name: Setup Aws as Nuget
         run: |
-          aws codeartifact login --tool dotnet --domain fullstackindie --domain-owner 896630178141 --repository fullstackindie --profile github-actions
-          aws codeartifact list-packages --domain fullstackindie --repository fullstackindie --profile github-actions
+          aws codeartifact login --tool dotnet --debug --domain fullstackindie --domain-owner 896630178141 --repository fullstackindie --profile github-actions
+          aws codeartifact list-packages --debug --domain fullstackindie --repository fullstackindie --profile github-actions
 
       - name: Cache Nuget Dependencies
         uses: actions/cache@v3
