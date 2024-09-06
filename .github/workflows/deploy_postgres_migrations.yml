@@ -101,4 +101,4 @@ jobs:
       - name: Verify EF-Core installation & update
         run: |
           dotnet ef
-          dotnet ef database update --verbose --project="{{ inputs.project-name }}" --context=${{ matrix.value }} --connection ${{ secrets.DB_CONNECTION_STRING}}
+          dotnet ef database update --verbose --project="${{ inputs.project-name }}" --context=${{ matrix.value }} --connection ${{ secrets.DB_CONNECTION_STRING}}
