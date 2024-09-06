@@ -76,8 +76,10 @@ jobs:
 
       - name: Verify EF-Core installation & update
         run: |
+          export PATH=$PATH:$HOME/.dotnet/tools
+          source ~/.bashrc
           dotnet ef
-          dotnet tool update dotnet-ef
+          dotnet tool restore
 
       - name: Use context-paths value
         run: |
