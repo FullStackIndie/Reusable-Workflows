@@ -81,17 +81,24 @@ jobs:
           dotnet ef --version
 
       - name: Get Code Artifact Token
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-west-2
         run: |
-          export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text`
+          mkdir ~/.aws && cd ~/.aws
+          echo [github-actions] > ./config
+          echo region = us-west-2 >> ./config
+          echo output = json >> ./config
+          echo [github-actions] > ./credentials
+          echo aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }} >> ./credentials
+          echo aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ./credentials
+          echo aws_region=${{ secrets.AWS_REGION }} >> ./credentials
+
+      - name: Get Code Artifact Token
+        run: |
+          export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text --profile github-actions`
 
       - name: Setup Aws as Nuget
         run: |
-          aws codeartifact login --tool dotnet --domain fullstackindie --domain-owner 896630178141 --repository fullstackindie
-          aws codeartifact list-packages --domain fullstackindie --repository fullstackindie
+          aws codeartifact login --tool dotnet --domain fullstackindie --domain-owner 896630178141 --repository fullstackindie --profile github-actions
+          aws codeartifact list-packages --domain fullstackindie --repository fullstackindie --profile github-actions
 
       - name: Cache Nuget Dependencies
         uses: actions/cache@v3
