@@ -80,18 +80,11 @@ jobs:
           source ~/.bashrc
           dotnet ef --version
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4.0.2
+      - name: Get Code Artifact Token
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-west-2
-        with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Get Code Artifact Token
         run: |
           export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text`
 
