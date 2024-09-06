@@ -38,7 +38,7 @@ jobs:
         run: |
           # Capture the input
           context_path_values="${{ inputs.context-path-values }}"
-          
+
           # Split the input by comma into a Bash array
           IFS=',' read -r -a array <<< "$context_path_values"
 
@@ -59,7 +59,7 @@ jobs:
   update_database_migrations:
     needs: sanitize-context-paths
     runs-on: ${{ inputs.runs-on }}
-    if: ${{ needs.sanitize-context-paths.outputs.context-path-values != '[]' }} 
+    if: ${{ needs.sanitize-context-paths.outputs.context-path-values != '[]' }}
     strategy:
       fail-fast: true
       matrix:
@@ -71,7 +71,7 @@ jobs:
       - name: Setup Dotnet and Install ef core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
       - run: dotnet tool install --global dotnet-ef
 
       - name: Verify EF-Core installation & update
@@ -80,14 +80,17 @@ jobs:
           source ~/.bashrc
           dotnet ef --version
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Get Code Artifact Token
         run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set region ${{ secrets.AWS_REGION }}
           export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text`
-      
+
       - name: Setup Aws as Nuget
         run: |
           aws codeartifact login --tool dotnet --domain fullstackindie --domain-owner 896630178141 --repository fullstackindie
@@ -112,7 +115,7 @@ jobs:
           echo "PROJECT_PATH=${{ inputs.project-name }}/${{ inputs.project-name }}" >> $GITHUB_ENV
 
       - name: Setup project path
-        if: ${{ inputs.double-folder-path == false }} 
+        if: ${{ inputs.double-folder-path == false }}
         run: |
           echo "PROJECT_PATH=${{ inputs.project-name }}" >> $GITHUB_ENV
 
