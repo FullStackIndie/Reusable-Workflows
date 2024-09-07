@@ -106,6 +106,7 @@ jobs:
           # export AWS_DEFAULT_REGION=us-west-2
       - name: Get Code Artifact Token
         run: |
+          aws configure set region us-west-2
           export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --debug --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text` >> $GITHUB_ENV
 
       - name: Setup Aws as Nuget
