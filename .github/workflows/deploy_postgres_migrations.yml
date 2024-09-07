@@ -59,10 +59,10 @@ jobs:
   update_database_migrations:
     needs: sanitize-context-paths
     runs-on: ${{ inputs.runs-on }}
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+    # env:
+    #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #   AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
     if: ${{ needs.sanitize-context-paths.outputs.context-path-values != '[]' }}
     strategy:
       fail-fast: true
@@ -99,7 +99,7 @@ jobs:
         run: |
           export AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID}}"
           export AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-          export AWS_DEFAULT_REGION="${{ secrets.AWS_DEFAULT_REGION }}"
+          export AWS_DEFAULT_REGION=us-west-2
           export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --debug --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text` >> $GITHUB_ENV
 
       - name: Setup Aws as Nuget
