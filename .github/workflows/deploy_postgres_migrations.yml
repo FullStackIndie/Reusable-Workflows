@@ -22,6 +22,9 @@ on:
       DB_CONNECTION_STRING:
         description: Postgres DB Connection String
         required: true
+      DIGITAL_OCEAN_DATABASE_CLUSTER_ID:
+        description: DB Cluster Id for Digital Ocean
+        required: true
       AWS_ACCESS_KEY_ID:
         description: Aws Access Key Id
         required: true
@@ -33,7 +36,21 @@ on:
         required: true
 
 jobs:
+  update-digital-ocean-firewall:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITAL_OCEAN_FIREWALL_API_TOKEN }}
+
+    - name: Get Github Runner IP
+      run: |
+        export 'GITHUB_ACTION_IP=$(curl -s https://ifconfig.io/)' >> $GITHUB_ENV
+        doctl databases firewalls append ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --rule type:ip_addr, value:$GITHUB_ACTION_IP --verbose
+
   sanitize-context-paths:
+    needs: update-digital-ocean-firewall
     runs-on: ubuntu-latest
     outputs:
       context-path-values: ${{ steps.prepare-context-paths.outputs.context-path-values }}
