@@ -137,6 +137,7 @@ jobs:
       - name: Verify EF-Core installation & update
         env:
           DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+          # The -- token directs dotnet ef to treat everything that follows as an argument
         run: |
           dotnet ef
-          dotnet ef database update --verbose --project="${{ inputs.project-name }}" --context=${{ matrix.value }} --environment ${{ inputs.environment }}
+          dotnet ef database update --verbose --project="${{ inputs.project-name }}" --context=${{ matrix.value }} -- --environment ${{ inputs.environment }}
