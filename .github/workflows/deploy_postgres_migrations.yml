@@ -26,6 +26,15 @@ on:
       DB_CONNECTION_STRING:
         description: Postgres DB Connection String
         required: true
+      AWS_ACCESS_KEY_ID:
+        description: Aws Access Key Id
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        description: Aws Secret Access Key
+        required: true
+      AWS_REGION:
+        description: Aws Region
+        required: true
 
 jobs:
   sanitize-context-paths:
@@ -59,10 +68,6 @@ jobs:
   update_database_migrations:
     needs: sanitize-context-paths
     runs-on: ${{ inputs.runs-on }}
-    # env:
-    #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #   AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
     if: ${{ needs.sanitize-context-paths.outputs.context-path-values != '[]' }}
     strategy:
       fail-fast: true
@@ -101,7 +106,7 @@ jobs:
           export AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
           export AWS_DEFAULT_REGION=us-west-2
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key {{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set region us-west-2
           aws configure set default.region us-west-2
           aws configure list
