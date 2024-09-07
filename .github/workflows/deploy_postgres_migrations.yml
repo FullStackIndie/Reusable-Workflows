@@ -50,6 +50,7 @@ jobs:
     - name: Update firewall rules with Github Runner IP for Digital Ocean DB
       run: |
         export GITHUB_ACTION_IP=$(curl https://ifconfig.io/)
+        echo $GITHUB_ACTION_IP
         doctl databases firewalls append ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --rule ip_addr:$GITHUB_ACTION_IP --verbose
 
   sanitize-context-paths:
@@ -139,5 +140,5 @@ jobs:
           DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
           # The -- token directs dotnet ef to treat everything that follows as an argument
         run: |
-          dotnet ef
+          echo curl https://ifconfig.io/
           dotnet ef database update --verbose --project="${{ inputs.project-name }}" --context=${{ matrix.value }} -- --environment ${{ inputs.environment }}
