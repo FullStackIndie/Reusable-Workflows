@@ -59,6 +59,10 @@ jobs:
   update_database_migrations:
     needs: sanitize-context-paths
     runs-on: ${{ inputs.runs-on }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
     if: ${{ needs.sanitize-context-paths.outputs.context-path-values != '[]' }}
     strategy:
       fail-fast: true
@@ -80,28 +84,25 @@ jobs:
           source ~/.bashrc
           dotnet ef --version
 
-      - name: Install AWS CLI
-        run: sudo apt-get install awscli
+      # - name: Get Code Artifact Token
+      #   run: |
+      #     mkdir ~/.aws && cd ~/.aws
+      #     echo [github-actions] > ./config
+      #     echo region = us-west-2 >> ./config
+      #     echo output = json >> ./config
+      #     echo [github-actions] > ./credentials
+      #     echo aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }} >> ./credentials
+      #     echo aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ./credentials
+      #     echo aws_region=${{ secrets.AWS_REGION }} >> ./credentials
 
       - name: Get Code Artifact Token
         run: |
-          mkdir ~/.aws && cd ~/.aws
-          echo [github-actions] > ./config
-          echo region = us-west-2 >> ./config
-          echo output = json >> ./config
-          echo [github-actions] > ./credentials
-          echo aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }} >> ./credentials
-          echo aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ./credentials
-          echo aws_region=${{ secrets.AWS_REGION }} >> ./credentials
-
-      - name: Get Code Artifact Token
-        run: |
-          export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --debug --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text --profile github-actions)
+          echo "CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --debug --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text)"" >> $GITHUB_ENV
 
       - name: Setup Aws as Nuget
         run: |
-          aws codeartifact login --tool dotnet --debug --domain fullstackindie --domain-owner 896630178141 --repository fullstackindie --profile github-actions
-          aws codeartifact list-packages --debug --domain fullstackindie --repository fullstackindie --profile github-actions
+          aws codeartifact login --tool dotnet --debug --domain fullstackindie --domain-owner 896630178141 --repository fullstackindie 
+          aws codeartifact list-packages --debug --domain fullstackindie --repository fullstackindie 
 
       - name: Cache Nuget Dependencies
         uses: actions/cache@v3
