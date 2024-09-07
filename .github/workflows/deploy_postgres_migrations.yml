@@ -143,4 +143,5 @@ jobs:
           echo "$GITHUB_ACTION_IP"
           doctl databases firewalls list ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} > firewall_rules.json
           export FIREWALL_UUID=$(grep -B 1 "\"value\":\"$GITHUB_ACTION_IP\"" firewall_rules.json | grep '"uuid"' | awk -F '"' '{print $4}')
+          echo $FIREWALL_UUID
           doctl databases firewalls remove ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --uuid $FIREWALL_UUID --verbose
