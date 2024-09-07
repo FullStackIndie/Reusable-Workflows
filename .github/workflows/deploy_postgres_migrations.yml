@@ -62,7 +62,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
     if: ${{ needs.sanitize-context-paths.outputs.context-path-values != '[]' }}
     strategy:
       fail-fast: true
@@ -97,7 +97,7 @@ jobs:
 
       - name: Get Code Artifact Token
         run: |
-          echo "CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --debug --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text)" >> $GITHUB_ENV
+          export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --debug --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text` >> $GITHUB_ENV
 
       - name: Setup Aws as Nuget
         run: |
