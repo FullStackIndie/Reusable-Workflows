@@ -137,11 +137,16 @@ jobs:
         run: |
           dotnet ef database update --verbose --project="${{ inputs.project-name }}" --context=${{ matrix.value }} -- --environment ${{ inputs.environment }}
 
-      - name: Remove Github Runner IP from firewall rules for Digital Ocean DB
+      - name: List firewall rules for Digital Ocean DB
         run: |
           export GITHUB_ACTION_IP="$(curl https://ifconfig.io/)"
           echo "$GITHUB_ACTION_IP"
           doctl databases firewalls list ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} > firewall_rules.json
+
+      - name: Remove Github Runner IP from firewall rules for Digital Ocean DB
+        run: |
+          echo "$GITHUB_ACTION_IP"
+          echo "$(jq -r --arg ip "$GITHUB_ACTION_IP" '.rules[] | select(.value == $ip) | .uuid' firewall_rules.json)"
           export FIREWALL_UUID="$(jq -r --arg ip "$GITHUB_ACTION_IP" '.rules[] | select(.value == $ip) | .uuid' firewall_rules.json)"
-          echo $FIREWALL_UUID
+          echo "$FIREWALL_UUID"
           doctl databases firewalls remove ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --uuid $FIREWALL_UUID --verbose
