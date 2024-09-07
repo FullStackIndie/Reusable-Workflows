@@ -49,7 +49,7 @@ jobs:
 
     - name: Get Github Runner IP
       run: |
-        export 'GITHUB_ACTION_IP=$(curl -s https://ifconfig.io/)' >> $GITHUB_ENV
+        export 'GITHUB_ACTION_IP=$(curl https://ifconfig.io/)' >> $GITHUB_ENV
         doctl databases firewalls append ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --rule type:ip_addr, value:$GITHUB_ACTION_IP --verbose
 
   sanitize-context-paths:
