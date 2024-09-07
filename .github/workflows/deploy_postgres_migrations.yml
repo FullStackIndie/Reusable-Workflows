@@ -47,12 +47,9 @@ jobs:
       with:
         token: ${{ secrets.DIGITAL_OCEAN_FIREWALL_API_TOKEN }}
 
-    - name: Get Github Runner IP
+    - name: Update firewall rules with Github Runner IP for Digital Ocean DB
       run: |
-        echo "GITHUB_ACTION_IP=$(curl https://ifconfig.io/)" >> $GITHUB_ENV
-
-    - name: Update firewall rules for Digital Ocean DB
-      run: |
+        export GITHUB_ACTION_IP=$(curl https://ifconfig.io/)
         doctl databases firewalls append ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --rule ip_addr:$GITHUB_ACTION_IP --verbose
 
   sanitize-context-paths:
