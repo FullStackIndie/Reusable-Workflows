@@ -97,7 +97,7 @@ jobs:
 
       - name: Get Code Artifact Token
         run: |
-          echo "CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --debug --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text)"" >> $GITHUB_ENV
+          echo "CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --debug --domain fullstackindie --domain-owner 896630178141 --query authorizationToken --output text)" >> $GITHUB_ENV
 
       - name: Setup Aws as Nuget
         run: |
