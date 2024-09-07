@@ -39,22 +39,7 @@ on:
         required: true
 
 jobs:
-  update-digital-ocean-firewall:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Install doctl
-      uses: digitalocean/action-doctl@v2
-      with:
-        token: ${{ secrets.DIGITAL_OCEAN_FIREWALL_API_TOKEN }}
-
-    - name: Update firewall rules with Github Runner IP for Digital Ocean DB
-      run: |
-        export GITHUB_ACTION_IP=$(curl https://ifconfig.io/)
-        echo $GITHUB_ACTION_IP
-        doctl databases firewalls append ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --rule ip_addr:$GITHUB_ACTION_IP --verbose
-
   sanitize-context-paths:
-    needs: update-digital-ocean-firewall
     runs-on: ubuntu-latest
     outputs:
       context-path-values: ${{ steps.prepare-context-paths.outputs.context-path-values }}
@@ -121,6 +106,17 @@ jobs:
         run: |
           aws codeartifact login --tool dotnet --domain fullstackindie --domain-owner 896630178141 --repository fullstackindie 
           aws codeartifact list-packages --domain fullstackindie --repository fullstackindie 
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITAL_OCEAN_FIREWALL_API_TOKEN }}
+
+      - name: Update firewall rules with Github Runner IP for Digital Ocean DB
+        run: |
+          export GITHUB_ACTION_IP=$(curl https://ifconfig.io/)
+          echo $GITHUB_ACTION_IP
+          doctl databases firewalls append ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --rule ip_addr:$GITHUB_ACTION_IP --verbose
 
       - name: Cache Nuget Dependencies
         uses: actions/cache@v3
