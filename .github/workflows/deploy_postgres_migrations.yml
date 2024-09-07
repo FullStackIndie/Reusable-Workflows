@@ -136,3 +136,10 @@ jobs:
           # The -- token directs dotnet ef to treat everything that follows as an argument
         run: |
           dotnet ef database update --verbose --project="${{ inputs.project-name }}" --context=${{ matrix.value }} -- --environment ${{ inputs.environment }}
+
+      - name: Remove Github Runner IP from firewall rules for Digital Ocean DB
+        run: |
+          export GITHUB_ACTION_IP=$(curl https://ifconfig.io/)
+          doctl databases firewalls list ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} > firewall_rules.json
+          export FIREWALL_UUID=$(jq -r '.rules[] | select(.value == $GITHUB_ACTION_IP) | .uuid' firewall_rules.json)
+          doctl databases firewalls remove ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --uuid $FIREWALL_UUID --verbose
