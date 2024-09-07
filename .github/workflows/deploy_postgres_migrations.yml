@@ -14,6 +14,10 @@ on:
       context-path-values:
         description: Comma seperated string of Context Names to migrate to the database "contex-1,context-2"
         type: string
+      environment:
+        description: EF Core environment (Development, Production)
+        type: string
+        default: Production
     secrets:
       DB_CONNECTION_STRING:
         description: Postgres DB Connection String
@@ -115,4 +119,4 @@ jobs:
           DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
         run: |
           dotnet ef
-          dotnet ef database update --verbose --project="${{ inputs.project-name }}" --context=${{ matrix.value }}
+          dotnet ef database update --verbose --project="${{ inputs.project-name }}" --context=${{ matrix.value }} --environment ${{ inputs.environment }}
