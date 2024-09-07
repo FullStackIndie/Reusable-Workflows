@@ -25,6 +25,9 @@ on:
       DIGITAL_OCEAN_DATABASE_CLUSTER_ID:
         description: DB Cluster Id for Digital Ocean
         required: true
+      DIGITAL_OCEAN_FIREWALL_API_TOKEN:
+        description: Digital Ocean API Token
+        required: true
       AWS_ACCESS_KEY_ID:
         description: Aws Access Key Id
         required: true
