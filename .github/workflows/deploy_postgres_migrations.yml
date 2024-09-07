@@ -11,14 +11,6 @@ on:
         description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
         type: string
         default: "none"
-      migration-folder-path:
-        description: Work Directory begins at /home/runner/work/ - Uses Project name with .Net default folder naming convention if not specified
-        type: string
-        default: "Data/Migrations"
-      double-folder-path:
-        description: Uses .Net default folder naming convention "ProjectName/ProjectName/*.csproj"
-        type: boolean
-        default: true
       context-path-values:
         description: Comma seperated string of Context Names to migrate to the database "contex-1,context-2"
         type: string
@@ -117,20 +109,6 @@ jobs:
       - name: Use context-paths value
         run: |
           echo "context-paths value: ${{ matrix.value }}"
-
-      - name: Setup project path
-        if: ${{ inputs.double-folder-path  == true }}
-        run: |
-          echo "PROJECT_PATH=${{ inputs.project-name }}/${{ inputs.project-name }}" >> $GITHUB_ENV
-
-      - name: Setup project path
-        if: ${{ inputs.double-folder-path == false }}
-        run: |
-          echo "PROJECT_PATH=${{ inputs.project-name }}" >> $GITHUB_ENV
-
-      - name: Verify environment variables
-        run: |
-          echo "PROJECT_PATH  : ${{ env.PROJECT_PATH }}"
 
       - name: Verify EF-Core installation & update
         env:
