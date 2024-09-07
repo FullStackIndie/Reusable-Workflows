@@ -145,9 +145,7 @@ jobs:
 
       - name: Remove Github Runner IP from firewall rules for Digital Ocean DB
         run: |
-          cat firewall_rules.json
           echo "$GITHUB_ACTION_IP"
-          echo "$(jq -r --arg ip "$GITHUB_ACTION_IP" '.rules[] | select(.value == $ip) | .uuid' firewall_rules.json)"
-          export FIREWALL_UUID="$(jq -r --arg ip "$GITHUB_ACTION_IP" '.rules[] | select(.value == $ip) | .uuid' firewall_rules.json)"
+          export FIREWALL_UUID="$(jq -r --arg ip "$GITHUB_ACTION_IP" '.[] | select(.value == $ip) | .uuid' firewall_rules.json)"
           echo "$FIREWALL_UUID"
           doctl databases firewalls remove ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --uuid $FIREWALL_UUID --verbose
