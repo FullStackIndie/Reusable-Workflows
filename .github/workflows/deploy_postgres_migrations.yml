@@ -141,7 +141,7 @@ jobs:
         run: |
           export GITHUB_ACTION_IP="$(curl https://ifconfig.io/)"
           echo "$GITHUB_ACTION_IP"
-          doctl databases firewalls list ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} > firewall_rules.json
+          doctl databases firewalls list ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --output json > firewall_rules.json
 
       - name: Remove Github Runner IP from firewall rules for Digital Ocean DB
         run: |
