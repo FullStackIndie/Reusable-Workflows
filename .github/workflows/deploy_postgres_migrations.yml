@@ -142,7 +142,6 @@ jobs:
           export GITHUB_ACTION_IP="$(curl https://ifconfig.io/)"
           echo "$GITHUB_ACTION_IP"
           doctl databases firewalls list ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --output json > firewall_rules.json
-          cat firewall_rules.json
           export FIREWALL_UUID="$(jq -r --arg ip "$GITHUB_ACTION_IP" '.[] | select(.value == $ip) | .uuid' firewall_rules.json)"
-          echo "$FIREWALL_UUID"
-          doctl databases firewalls remove ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --uuid $FIREWALL_UUID --verbose
+          echo "\n $FIREWALL_UUID"
+          doctl databases firewalls remove ${{ secrets.DIGITAL_OCEAN_DATABASE_CLUSTER_ID }} --uuid $FIREWALL_UUID
