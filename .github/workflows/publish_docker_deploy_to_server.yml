@@ -55,6 +55,9 @@ name: >-
       OTEL_ENDPOINT:
         description: Otel Endpoint Url for sending Telemetry
         required: false
+      DB_CONNECTION_STRING:
+        description: DB connection string
+        required: false
 
   workflow_dispatch:
     inputs:
@@ -121,6 +124,7 @@ jobs:
             cd ${{ inputs.docker-compose-dir }}
             export DOPPLER_TOKEN=${{ secrets.DOPPLER_TOKEN }}
             echo 'OTEL_ENDPOINT=$OTEL_ENDPOINT' > env.prod
+            echo 'DB_CONNECTION_STRING={{ secrets.DB_CONNECTION_STRING }}' > env.prod
             echo 'DOPPLER_TOKEN={{ doppler_token_blog }}' >> env.prod
             docker compose -f ${{ inputs.docker-compose-file }} down
             doppler run --mount docker-compose.yml --mount-template ${{ inputs.docker-compose-file }} --command 'doppler run -- docker compose up -d'
