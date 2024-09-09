@@ -133,7 +133,7 @@ jobs:
       - name: Verify EF-Core installation & update
           # The -- token directs dotnet ef to treat everything that follows as an argument
         run: |
-          dotnet ef database update --verbose --project="${{ inputs.project-name }}" --context=${{ matrix.value }} --connection ${{ secrets.DB_CONNECTION_STRING }} -- --environment ${{ inputs.environment }}
+          dotnet ef database update --verbose --project="${{ inputs.project-name }}" --context=${{ matrix.value }} --connection "${{ secrets.DB_CONNECTION_STRING }}" -- --environment ${{ inputs.environment }}
 
       - name: Remove Github Runner IP from firewall rules for Digital Ocean DB
         run: |
