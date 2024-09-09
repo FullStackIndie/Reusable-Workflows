@@ -109,6 +109,12 @@ jobs:
     needs: push-docker-image
     runs-on: ${{ inputs.runs-on }}
     steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
       - name: SSH into Dev Server
         env:
           OTEL_ENDPOINT: ${{ secrets.OTEL_ENDPOINT }}
