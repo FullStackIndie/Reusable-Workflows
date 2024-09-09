@@ -131,6 +131,8 @@ jobs:
           echo "context-paths value: ${{ matrix.value }}"
 
       - name: Verify EF-Core installation & update
+        env: 
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
           # The -- token directs dotnet ef to treat everything that follows as an argument
         run: |
           dotnet ef database update --verbose --project="${{ inputs.project-name }}" --context=${{ matrix.value }} --connection "${{ secrets.DB_CONNECTION_STRING }}" -- --environment ${{ inputs.environment }}
